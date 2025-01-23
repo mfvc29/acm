@@ -3,6 +3,56 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+# Diccionario de zonas y municipios
+zonas = {
+    0: 'Lima Top',
+    1: 'Lima Moderna',
+    2: 'Lima Centro',
+    3: 'Lima Norte',
+    4: 'Lima Sur',
+    5: 'Lima Este',
+    6: 'Lima Callao'
+}
+
+municipios = {
+    0: 'Barranco',
+    1: 'Jesús María',
+    2: 'Cercado de Lima',
+    3: 'Carabayllo',
+    4: 'Chorrillos',
+    5: 'Ate Vitarte',
+    6: 'La Perla',
+    7: 'San Borja',
+    8: 'Pueblo Libre',
+    9: 'La Victoria',
+    10: 'Comas',
+    11: 'Punta Hermosa',
+    12: 'Chaclacayo',
+    13: 'Callao',
+    14: 'Santiago de Surco',
+    15: 'Lince',
+    16: 'Breña',
+    17: 'San Martín de Porres',
+    18: 'San Bartolo',
+    19: 'Chosica',
+    20: 'Bellavista',
+    21: 'Miraflores',
+    22: 'San Miguel',
+    23: 'Rímac',
+    24: 'Independencia',
+    25: 'Punta Negra',
+    26: 'San Luis',
+    27: 'San Isidro',
+    28: 'Magdalena del Mar',
+    29: 'Los Olivos',
+    30: 'Cerro Azul',
+    31: 'El Agustino',
+    32: 'La Molina',
+    33: 'Surquillo',
+    34: 'Ancón',
+    35: 'Cieneguilla'
+}
+
 # Cargar los datos generados
 data = pd.read_csv("data_prueba.csv")
 
@@ -55,8 +105,22 @@ def realizar_prediccion(area_total, zona, dormitorios, banos, estacionamiento, m
 # Título de la aplicación
 st.title("Predicción de Precio de Propiedades")
 
-# Descripción de la app
+# Mostrar diccionario de zonas y municipios
+st.subheader("Consideraciones de Zonas y Municipios")
 st.markdown("""
+A continuación se presentan las zonas y municipios correspondientes a cada identificador (ID):
+""")
+
+st.markdown("### Zonas")
+for key, value in zonas.items():
+    st.markdown(f"**ID {key}:** {value}")
+
+st.markdown("### Municipios")
+for key, value in municipios.items():
+    st.markdown(f"**ID {key}:** {value}")
+
+# Descripción de la app
+st.markdown(""" 
 Esta aplicación te permite calcular el precio estimado de una propiedad basado en su área total, zona, número de dormitorios, baños, estacionamiento y municipio. 
 Los resultados incluyen propiedades similares, el precio mínimo y máximo, y otros indicadores relacionados.
 """)
