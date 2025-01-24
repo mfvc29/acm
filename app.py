@@ -3,59 +3,35 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
+# Definir el diccionario de zonas y municipios
 zonas_municipios = {
     'Lima Top': {
-        0: 'Barranco',
-        1: 'San Borja',
-        2: 'Santiago de Surco',
-        3: 'Miraflores',
-        4: 'San Isidro',
-        5: 'La Molina'
+        0: 'Barranco', 1: 'San Borja', 2: 'Santiago de Surco', 3: 'Miraflores',
+        4: 'San Isidro', 5: 'La Molina'
     },
     'Lima Moderna': {
-        6: 'Jesús María',
-        7: 'Pueblo Libre',
-        8: 'Lince',
-        9: 'San Miguel',
-        10: 'Magdalena del Mar',
-        11: 'Surquillo'
+        6: 'Jesús María', 7: 'Pueblo Libre', 8: 'Lince', 9: 'San Miguel',
+        10: 'Magdalena del Mar', 11: 'Surquillo'
     },
     'Lima Centro': {
-        12: 'Cercado de Lima',
-        13: 'La Victoria',
-        14: 'Breña',
-        15: 'Rímac'
+        12: 'Cercado de Lima', 13: 'La Victoria', 14: 'Breña', 15: 'Rímac'
     },
     'Lima Norte': {
-        16: 'Carabayllo',
-        17: 'Comas',
-        18: 'San Martín de Porres',
-        19: 'Independencia',
-        20: 'Los Olivos',
-        21: 'Ancón'
+        16: 'Carabayllo', 17: 'Comas', 18: 'San Martín de Porres', 19: 'Independencia',
+        20: 'Los Olivos', 21: 'Ancón'
     },
     'Lima Sur': {
-        22: 'Chorrillos',
-        23: 'Punta Hermosa',
-        24: 'San Bartolo',
-        25: 'Punta Negra',
+        22: 'Chorrillos', 23: 'Punta Hermosa', 24: 'San Bartolo', 25: 'Punta Negra',
         26: 'Cerro Azul'
     },
     'Lima Este': {
-        27: 'Ate Vitarte',
-        28: 'Chaclacayo',
-        29: 'Chosica',
-        30: 'San Luis',
-        31: 'El Agustino',
-        32: 'Cieneguilla'
+        27: 'Ate Vitarte', 28: 'Chaclacayo', 29: 'Chosica', 30: 'San Luis',
+        31: 'El Agustino', 32: 'Cieneguilla'
     },
     'Lima Callao': {
-        33: 'La Perla',
-        34: 'Callao',
-        35: 'Bellavista'
+        33: 'La Perla', 34: 'Callao', 35: 'Bellavista'
     }
 }
-
 
 # Cargar los datos generados
 data = pd.read_csv("base_cu.csv")
@@ -107,63 +83,68 @@ def realizar_prediccion(area_total, zona, dormitorios, banos, estacionamiento, m
     return precio_estimado, propiedades_similares, precio_minimo, precio_maximo, num_propiedades_min_max, num_propiedades_estimadas
 
 # Título de la aplicación
-st.title("Predicción de Precio de Propiedades")
+st.title("🏡 **Predicción de Precio de Propiedades**")
 
-# Mostrar diccionario de zonas y municipios
-st.subheader("Consideraciones de Zonas y Municipios")
+# Agregar un texto de introducción más estilizado
 st.markdown("""
-A continuación se presentan las zonas y municipios correspondientes a cada identificador (ID):
+Bienvenido a la herramienta de predicción de precios de propiedades. 
+Aquí podrás calcular el valor estimado de una propiedad en Lima con base en sus características.
 """)
-zonas = zonas_municipios
-municipios = {}
-for zona, municipios_zona in zonas_municipios.items():
-    for id_municipio, municipio in municipios_zona.items():
-        municipios[id_municipio] = municipio
-        
-st.markdown("### Zonas")
-for key, value in zonas.items():
-    st.markdown(f"**ID {key}:** {value}")
 
-st.markdown("### Municipios")
-for key, value in municipios.items():
-    st.markdown(f"**ID {key}:** {value}")
+# Mostrar diccionario de zonas y municipios con un formato más atractivo
+st.subheader("🌍 **Zonas y Municipios en Lima**")
+
+st.markdown("### Zonas de Lima")
+for key, value in zonas_municipios.items():
+    st.markdown(f"**ID {key}:** {', '.join(value.values())}")
+
+# Agregar espacio entre las secciones
+st.markdown("---")
 
 # Descripción de la app
-st.markdown(""" 
+st.markdown("""
 Esta aplicación te permite calcular el precio estimado de una propiedad basado en su área total, zona, número de dormitorios, baños, estacionamiento y municipio. 
-Los resultados incluyen propiedades similares, el precio mínimo y máximo, y otros indicadores relacionados.
+A continuación, ingresa los datos de la propiedad y obtendrás el precio estimado junto con información adicional sobre propiedades similares.
 """)
 
 # Crear formulario para ingreso de datos
-st.subheader("Ingresa los detalles de la propiedad")
+st.subheader("📊 **Ingresa los detalles de la propiedad**")
 
-area_total = st.number_input("Área Total (m²)", min_value=0.0, step=1.0)
-zona = st.number_input("Zona (ID de zona)", min_value=0, step=1)
-dormitorios = st.number_input("Dormitorios", min_value=0, step=1)
-banos = st.number_input("Baños", min_value=0, step=1)
-estacionamiento = st.number_input("Estacionamiento", min_value=0, step=1)
-municipio = st.number_input("Municipio (ID de municipio)", min_value=0, step=1)
+col1, col2 = st.columns(2)
+
+with col1:
+    area_total = st.number_input("Área Total (m²)", min_value=0.0, step=1.0)
+    dormitorios = st.number_input("Dormitorios", min_value=0, step=1)
+    banos = st.number_input("Baños", min_value=0, step=1)
+
+with col2:
+    estacionamiento = st.number_input("Estacionamiento", min_value=0, step=1)
+    zona = st.number_input("Zona (ID de zona)", min_value=0, step=1)
+    municipio = st.number_input("Municipio (ID de municipio)", min_value=0, step=1)
 
 # Botón para ejecutar la predicción
-if st.button("Calcular Precio"):
+if st.button("🔮 **Calcular Precio**"):
     precio_estimado, propiedades_similares, precio_minimo, precio_maximo, num_propiedades_min_max, num_propiedades_estimadas = realizar_prediccion(
         area_total, zona, dormitorios, banos, estacionamiento, municipio)
 
-    # Mostrar resultados
-    st.subheader(f"Precio Estimado: {precio_estimado:.2f} USD")
+    # Mostrar los resultados de forma más organizada
+    st.subheader(f"💰 **Precio Estimado: {precio_estimado:.2f} USD**")
     
     # Mostrar tabla de propiedades similares
-    st.subheader(f"Propiedades Similares:")
+    st.subheader("🏠 **Propiedades Similares**")
     st.write(propiedades_similares[['Área Total', 'Zona', 'Dormitorios', 'Baños', 'Estacionamiento', 'Municipio', 'Precio Venta']])
 
-    st.subheader(f"Precio Mínimo: {precio_minimo:.2f} USD")
-    st.subheader(f"Precio Máximo: {precio_maximo:.2f} USD")
-    st.subheader(f"Número de Propiedades con Precio Mínimo y Máximo: {num_propiedades_min_max}")
-    st.subheader(f"Número de Propiedades con Precio Estimado y Máximo: {num_propiedades_estimadas}")
-    
+    st.subheader(f"📉 **Precio Mínimo: {precio_minimo:.2f} USD**")
+    st.subheader(f"📈 **Precio Máximo: {precio_maximo:.2f} USD**")
+    st.subheader(f"🔢 **Número de Propiedades con Precio Mínimo y Máximo: {num_propiedades_min_max}**")
+    st.subheader(f"🔮 **Número de Propiedades con Precio Estimado: {num_propiedades_estimadas}**")
+
     # Consejos adicionales
     st.markdown("""
     **Consejos:**
     - Si el precio estimado está fuera del rango de propiedades similares, es posible que la propiedad tenga características únicas.
     - Las propiedades similares te ofrecen una mejor visión del mercado en la zona específica.
     """)
+
+    # Agregar una línea divisoria
+    st.markdown("---")
