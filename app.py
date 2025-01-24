@@ -3,58 +3,62 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
-# Diccionario de zonas y municipios
-zonas = {
-    0: 'Lima Top',
-    1: 'Lima Moderna',
-    2: 'Lima Centro',
-    3: 'Lima Norte',
-    4: 'Lima Sur',
-    5: 'Lima Este',
-    6: 'Lima Callao'
+zonas_municipios = {
+    'Lima Top': {
+        0: 'Barranco',
+        1: 'San Borja',
+        2: 'Santiago de Surco',
+        3: 'Miraflores',
+        4: 'San Isidro',
+        5: 'La Molina'
+    },
+    'Lima Moderna': {
+        6: 'Jesús María',
+        7: 'Pueblo Libre',
+        8: 'Lince',
+        9: 'San Miguel',
+        10: 'Magdalena del Mar',
+        11: 'Surquillo'
+    },
+    'Lima Centro': {
+        12: 'Cercado de Lima',
+        13: 'La Victoria',
+        14: 'Breña',
+        15: 'Rímac'
+    },
+    'Lima Norte': {
+        16: 'Carabayllo',
+        17: 'Comas',
+        18: 'San Martín de Porres',
+        19: 'Independencia',
+        20: 'Los Olivos',
+        21: 'Ancón'
+    },
+    'Lima Sur': {
+        22: 'Chorrillos',
+        23: 'Punta Hermosa',
+        24: 'San Bartolo',
+        25: 'Punta Negra',
+        26: 'Cerro Azul'
+    },
+    'Lima Este': {
+        27: 'Ate Vitarte',
+        28: 'Chaclacayo',
+        29: 'Chosica',
+        30: 'San Luis',
+        31: 'El Agustino',
+        32: 'Cieneguilla'
+    },
+    'Lima Callao': {
+        33: 'La Perla',
+        34: 'Callao',
+        35: 'Bellavista'
+    }
 }
 
-municipios = {
-    0: 'Barranco',
-    1: 'Jesús María',
-    2: 'Cercado de Lima',
-    3: 'Carabayllo',
-    4: 'Chorrillos',
-    5: 'Ate Vitarte',
-    6: 'La Perla',
-    7: 'San Borja',
-    8: 'Pueblo Libre',
-    9: 'La Victoria',
-    10: 'Comas',
-    11: 'Punta Hermosa',
-    12: 'Chaclacayo',
-    13: 'Callao',
-    14: 'Santiago de Surco',
-    15: 'Lince',
-    16: 'Breña',
-    17: 'San Martín de Porres',
-    18: 'San Bartolo',
-    19: 'Chosica',
-    20: 'Bellavista',
-    21: 'Miraflores',
-    22: 'San Miguel',
-    23: 'Rímac',
-    24: 'Independencia',
-    25: 'Punta Negra',
-    26: 'San Luis',
-    27: 'San Isidro',
-    28: 'Magdalena del Mar',
-    29: 'Los Olivos',
-    30: 'Cerro Azul',
-    31: 'El Agustino',
-    32: 'La Molina',
-    33: 'Surquillo',
-    34: 'Ancón',
-    35: 'Cieneguilla'
-}
 
 # Cargar los datos generados
-data = pd.read_csv("data_prueba.csv")
+data = pd.read_csv("base_cu.csv")
 
 # Preprocesar la variable 'Zona' y 'Municipio' (codificación)
 label_encoder = LabelEncoder()
