@@ -37,9 +37,12 @@ zonas_municipios = {
 data = pd.read_csv("base_cu.csv")
 
 # Preprocesar la variable 'Zona' y 'Municipio' (codificación)
-label_encoder = LabelEncoder()
-data['Zona'] = label_encoder.fit_transform(data['Zona'])
-data['Municipio'] = label_encoder.fit_transform(data['Municipio'])
+label_encoder_zona = LabelEncoder()
+label_encoder_municipio = LabelEncoder()
+
+# Codificar las zonas y municipios
+data['Zona'] = label_encoder_zona.fit_transform(data['Zona'])
+data['Municipio'] = label_encoder_municipio.fit_transform(data['Municipio'])
 
 # Definir las características (X) y el objetivo (y)
 X = data[['Área Total', 'Zona', 'Dormitorios', 'Baños', 'Estacionamiento', 'Municipio']]
@@ -94,9 +97,11 @@ Aquí podrás calcular el valor estimado de una propiedad en Lima con base en su
 # Mostrar diccionario de zonas y municipios con un formato más atractivo
 st.subheader("🌍 **Zonas y Municipios en Lima**")
 
-st.markdown("### Zonas de Lima")
+# Mostrar Zonas con sus respectivos números
+st.markdown("### **Zonas de Lima (ID asignado)**")
 for key, value in zonas_municipios.items():
-    st.markdown(f"**ID {key}:** {', '.join(value.values())}")
+    zona_nombres = [f"**ID {zona_id}: {zona_nombre}**" for zona_id, zona_nombre in value.items()]
+    st.markdown(f"**{key}:** {', '.join(zona_nombres)}")
 
 # Agregar espacio entre las secciones
 st.markdown("---")
@@ -119,8 +124,8 @@ with col1:
 
 with col2:
     estacionamiento = st.number_input("Estacionamiento", min_value=0, step=1)
-    zona = st.number_input("Zona (ID de zona)", min_value=0, step=1)
-    municipio = st.number_input("Municipio (ID de municipio)", min_value=0, step=1)
+    zona = st.selectbox("Zona (ID de zona)", list(label_encoder_zona.classes_))
+    municipio = st.selectbox("Municipio (ID de municipio)", list(label_encoder_municipio.classes_))
 
 # Botón para ejecutar la predicción
 if st.button("🔮 **Calcular Precio**"):
