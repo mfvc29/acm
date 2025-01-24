@@ -114,7 +114,12 @@ st.subheader("Consideraciones de Zonas y Municipios")
 st.markdown("""
 A continuación se presentan las zonas y municipios correspondientes a cada identificador (ID):
 """)
-
+zonas = zonas_municipios
+municipios = {}
+for zona, municipios_zona in zonas_municipios.items():
+    for id_municipio, municipio in municipios_zona.items():
+        municipios[id_municipio] = municipio
+        
 st.markdown("### Zonas")
 for key, value in zonas.items():
     st.markdown(f"**ID {key}:** {value}")
