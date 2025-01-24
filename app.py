@@ -94,17 +94,13 @@ Bienvenido a la herramienta de predicción de precios de propiedades.
 Aquí podrás calcular el valor estimado de una propiedad en Lima con base en sus características.
 """)
 
-# Mostrar diccionario de zonas y municipios con un formato más atractivo
-st.subheader("🌍 **Zonas y Municipios en Lima**")
-
-# Mostrar Zonas con sus respectivos números
-st.markdown("### **Zonas de Lima (ID asignado)**")
-for key, value in zonas_municipios.items():
-    zona_nombres = [f"**ID {zona_id}: {zona_nombre}**" for zona_id, zona_nombre in value.items()]
-    st.markdown(f"**{key}:** {', '.join(zona_nombres)}")
-
-# Agregar espacio entre las secciones
-st.markdown("---")
+# Mostrar las zonas y municipios dentro de un "expander"
+with st.expander("🌍 **Zonas y Municipios en Lima** (Haz clic para ver más)"):
+    # Mostrar Zonas con sus respectivos números
+    st.markdown("### **Zonas de Lima (ID asignado)**")
+    for key, value in zonas_municipios.items():
+        zona_nombres = [f"**ID {zona_id}: {zona_nombre}**" for zona_id, zona_nombre in value.items()]
+        st.markdown(f"**{key}:** {', '.join(zona_nombres)}")
 
 # Descripción de la app
 st.markdown("""
