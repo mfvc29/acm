@@ -3,25 +3,20 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 
-# Diccionario de zonas y municipios
+# Diccionario de zonas (distritos)
 zonas = {
-    'Lima Top': 'Barranco, San Borja, Santiago de Surco, Miraflores, San Isidro, La Molina',
-    'Lima Moderna': 'Jesús María, Pueblo Libre, Lince, San Miguel, Magdalena del Mar, Surquillo',
-    'Lima Centro': 'Cercado de Lima, La Victoria, Breña, Rímac',
-    'Lima Norte': 'Carabayllo, Comas, San Martín de Porres, Independencia, Los Olivos, Ancón',
-    'Lima Sur': 'Chorrillos, Punta Hermosa, San Bartolo, Punta Negra, Cerro Azul',
-    'Lima Este': 'Ate Vitarte, Chaclacayo, Chosica, San Luis, El Agustino, Cieneguilla',
-    'Lima Callao': 'La Perla, Callao, Bellavista'
+    'Barranco': 0, 'San Borja': 1, 'Santiago de Surco': 2, 'Miraflores': 3, 'San Isidro': 4, 'La Molina': 5,
+    'Jesús María': 6, 'Pueblo Libre': 7, 'Lince': 8, 'San Miguel': 9, 'Magdalena del Mar': 10, 'Surquillo': 11,
+    'Cercado de Lima': 12, 'La Victoria': 13, 'Breña': 14, 'Rímac': 15, 'Carabayllo': 16, 'Comas': 17,
+    'San Martín de Porres': 18, 'Independencia': 19, 'Los Olivos': 20, 'Ancón': 21, 'Chorrillos': 22,
+    'Punta Hermosa': 23, 'San Bartolo': 24, 'Punta Negra': 25, 'Cerro Azul': 26, 'Ate Vitarte': 27,
+    'Chaclacayo': 28, 'Chosica': 29, 'San Luis': 30, 'El Agustino': 31, 'Cieneguilla': 32, 'La Perla': 33,
+    'Callao': 34, 'Bellavista': 35
 }
 
+# Diccionario de municipios (áreas de Lima)
 municipios = {
-    0: 'Barranco', 1: 'San Borja', 2: 'Santiago de Surco', 3: 'Miraflores', 4: 'San Isidro', 5: 'La Molina',
-    6: 'Jesús María', 7: 'Pueblo Libre', 8: 'Lince', 9: 'San Miguel', 10: 'Magdalena del Mar', 11: 'Surquillo',
-    12: 'Cercado de Lima', 13: 'La Victoria', 14: 'Breña', 15: 'Rímac', 16: 'Carabayllo', 17: 'Comas',
-    18: 'San Martín de Porres', 19: 'Independencia', 20: 'Los Olivos', 21: 'Ancón', 22: 'Chorrillos',
-    23: 'Punta Hermosa', 24: 'San Bartolo', 25: 'Punta Negra', 26: 'Cerro Azul', 27: 'Ate Vitarte',
-    28: 'Chaclacayo', 29: 'Chosica', 30: 'San Luis', 31: 'El Agustino', 32: 'Cieneguilla', 33: 'La Perla',
-    34: 'Callao', 35: 'Bellavista'
+    'Lima Top': 0, 'Lima Moderna': 1, 'Lima Centro': 2, 'Lima Norte': 3, 'Lima Sur': 4, 'Lima Este': 5, 'Lima Callao': 6
 }
 
 # Cargar los datos generados
@@ -31,9 +26,9 @@ data = pd.read_csv("base_cu.csv")
 label_encoder_zona = LabelEncoder()
 label_encoder_municipio = LabelEncoder()
 
-# Codificar zonas y municipios
+# Codificar zonas (distritos) y municipios (áreas de Lima)
 data['Zona'] = label_encoder_zona.fit_transform(data['Zona'])
-data['Municipio'] = label_encoder_municipio.fit_transform(data['Municipio'])
+data['Municipio'] = data['Municipio'].map(municipios)
 
 # Definir las características (X) y el objetivo (y)
 X = data[['Área Total', 'Zona', 'Dormitorios', 'Baños', 'Estacionamiento', 'Municipio']]
@@ -85,11 +80,11 @@ st.markdown("""
 A continuación se presentan las zonas y municipios correspondientes a cada identificador (ID):
 """)
 
-st.markdown("### Zonas")
+st.markdown("### Zonas (Distritos)")
 for key, value in zonas.items():
     st.markdown(f"**ID {key}:** {value}")
 
-st.markdown("### Municipios")
+st.markdown("### Municipios (Áreas de Lima)")
 for key, value in municipios.items():
     st.markdown(f"**ID {key}:** {value}")
 
@@ -103,11 +98,11 @@ Los resultados incluyen propiedades similares, el precio mínimo y máximo, y ot
 st.subheader("Ingresa los detalles de la propiedad")
 
 area_total = st.number_input("Área Total (m²)", min_value=0.0, step=1.0)
-zona = st.number_input("Zona (ID de zona)", min_value=0, step=1)
+zona = st.number_input("Zona (ID del distrito)", min_value=0, step=1)
 dormitorios = st.number_input("Dormitorios", min_value=0, step=1)
 banos = st.number_input("Baños", min_value=0, step=1)
 estacionamiento = st.number_input("Estacionamiento", min_value=0, step=1)
-municipio = st.number_input("Municipio (ID de municipio)", min_value=0, step=1)
+municipio = st.number_input("Municipio (ID de área de Lima)", min_value=0, step=1)
 
 # Botón para ejecutar la predicción
 if st.button("🔮 **Calcular Precio**"):
