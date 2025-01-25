@@ -1,129 +1,87 @@
 import streamlit as st
+import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import LabelEncoder
+import joblib
+from sklearn.metrics import pairwise_distances
 
-# Diccionario de zonas (distritos)
-zonas = {
-    'Barranco': 0, 'San Borja': 1, 'Santiago de Surco': 2, 'Miraflores': 3, 'San Isidro': 4, 'La Molina': 5,
-    'Jesús María': 6, 'Pueblo Libre': 7, 'Lince': 8, 'San Miguel': 9, 'Magdalena del Mar': 10, 'Surquillo': 11,
-    'Cercado de Lima': 12, 'La Victoria': 13, 'Breña': 14, 'Rímac': 15, 'Carabayllo': 16, 'Comas': 17,
-    'San Martín de Porres': 18, 'Independencia': 19, 'Los Olivos': 20, 'Ancón': 21, 'Chorrillos': 22,
-    'Punta Hermosa': 23, 'San Bartolo': 24, 'Punta Negra': 25, 'Cerro Azul': 26, 'Ate Vitarte': 27,
-    'Chaclacayo': 28, 'Chosica': 29, 'San Luis': 30, 'El Agustino': 31, 'Cieneguilla': 32, 'La Perla': 33,
-    'Callao': 34, 'Bellavista': 35
-}
+# Cargar el modelo previamente guardado
+model = joblib.load('random_forest_model.pkl')
 
-# Diccionario de municipios (áreas de Lima)
-municipios = {
-    'Lima Top': 0, 'Lima Moderna': 1, 'Lima Centro': 2, 'Lima Norte': 3, 'Lima Sur': 4, 'Lima Este': 5, 'Lima Callao': 6
-}
-
-# Cargar los datos generados
-data = pd.read_csv("base_cu.csv")
-
-# Preprocesar la variable 'Zona' y 'Municipio' (codificación)
-label_encoder_zona = LabelEncoder()
-label_encoder_municipio = LabelEncoder()
-
-# Codificar zonas (distritos) y municipios (áreas de Lima)
-data['Zona'] = label_encoder_zona.fit_transform(data['Zona'])
-data['Municipio'] = data['Municipio'].map(municipios)
-
-# Definir las características (X) y el objetivo (y)
-X = data[['Área Total', 'Zona', 'Dormitorios', 'Baños', 'Estacionamiento', 'Municipio']]
-y = data['Precio Venta']
-
-# Entrenamiento de RandomForest
-model_rf = RandomForestRegressor(n_estimators=100, random_state=42)
-model_rf.fit(X, y)
-
-# Función para realizar la predicción
-def realizar_prediccion(area_total, zona, dormitorios, banos, estacionamiento, municipio):
-    input_data = pd.DataFrame({
-        'Área Total': [area_total],
-        'Zona': [zona],
+# Función para predecir el precio y las propiedades similares
+def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
+    entrada = pd.DataFrame({
+        'Área Total log': [np.log1p(area_total)],  # Aplicar log para el modelo
         'Dormitorios': [dormitorios],
         'Baños': [banos],
         'Estacionamiento': [estacionamiento],
-        'Municipio': [municipio]
+        'Zona_num': [zona_num],
     })
 
-    # Realizar la predicción
-    precio_estimado = model_rf.predict(input_data)[0]
+    # Predicción del precio en logaritmo
+    prediccion_log = model.predict(entrada)
+
+    # Convertir la predicción de logaritmo a la escala original
+    precio_venta_pred = np.expm1(prediccion_log)[0]
+
+    # Calcular distancias para encontrar propiedades similares
+    propiedades_similares = data.copy()
+
+    # Calcular la distancia euclidiana entre la entrada y el dataset
+    features = ['Área Total log', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']
+    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
+    indices_similares = np.argsort(distancias[0])[:10]  # Tomar los 5 más cercanos
+
+    # Seleccionar propiedades similares
+    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+
+    # Revertir logaritmo para mostrar los valores originales
+    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
+    propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
+
+    # Eliminar las columnas logarítmicas para claridad
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Venta']]
+
+    # Zonas y municipios
+    zonas_municipios = {
+        0: 'Lima Top',
+        1: 'Lima Moderna',
+        2: 'Lima Centro',
+        3: 'Lima Norte',
+        4: 'Lima Sur',
+        5: 'Lima Este',
+        6: 'Lima Callao'
+    }
+
+    # Mapear la zona numérica a su nombre de municipio
+    if zona_num <= 5:
+        zona = zonas_municipios[0]
+        municipio = ["Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina"][zona_num]
+    else:
+        zona = 'Zona desconocida'
+        municipio = 'Municipio desconocido'
+
+    return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
+
+# Cargar el dataset (asegúrate de que el archivo "dataset.csv" esté en la misma carpeta)
+data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
+
+# Interfaz de usuario con Streamlit
+st.title("Predicción de Precio de Propiedades en Lima")
+st.write("Introduce los datos de la propiedad para obtener una estimación de su precio y las propiedades similares.")
+
+# Formularios para los datos de entrada
+area_total = st.number_input("Área Total (m²)", min_value=1)
+dormitorios = st.number_input("Número de Dormitorios", min_value=1)
+banos = st.number_input("Número de Baños", min_value=1)
+estacionamiento = st.number_input("Número de Estacionamientos", min_value=0)
+zona_num = st.number_input("Número de Zona (0-35)", min_value=0, max_value=35)
+
+if st.button("Predecir Precio"):
+    precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data)
     
-    # Filtrar propiedades similares
-    propiedades_similares = data[ 
-        (data['Zona'] == zona) & 
-        (data['Municipio'] == municipio)
-    ]
-    
-    # Calcular precio mínimo y máximo en propiedades similares
-    precio_minimo = propiedades_similares['Precio Venta'].min()
-    precio_maximo = propiedades_similares['Precio Venta'].max()
-
-    # Contar propiedades dentro de los rangos
-    num_propiedades_min_max = len(propiedades_similares[(propiedades_similares['Precio Venta'] >= precio_minimo) & 
-                                                        (propiedades_similares['Precio Venta'] <= precio_maximo)])
-    
-    num_propiedades_estimadas = len(propiedades_similares[(propiedades_similares['Precio Venta'] >= precio_estimado - 10000) & 
-                                                           (propiedades_similares['Precio Venta'] <= precio_estimado + 10000)])
-
-    return precio_estimado, propiedades_similares, precio_minimo, precio_maximo, num_propiedades_min_max, num_propiedades_estimadas
-
-# Título de la aplicación
-st.title("Predicción de Precio de Propiedades")
-
-# Mostrar diccionario de zonas y municipios
-st.subheader("Consideraciones de Zonas y Municipios")
-st.markdown("""
-A continuación se presentan las zonas y municipios correspondientes a cada identificador (ID):
-""")
-
-st.markdown("### Zonas (Distritos)")
-for key, value in zonas.items():
-    st.markdown(f"**ID {key}:** {value}")
-
-st.markdown("### Municipios (Áreas de Lima)")
-for key, value in municipios.items():
-    st.markdown(f"**ID {key}:** {value}")
-
-# Descripción de la app
-st.markdown(""" 
-Esta aplicación te permite calcular el precio estimado de una propiedad basado en su área total, zona, número de dormitorios, baños, estacionamiento y municipio. 
-Los resultados incluyen propiedades similares, el precio mínimo y máximo, y otros indicadores relacionados.
-""")
-
-# Crear formulario para ingreso de datos
-st.subheader("Ingresa los detalles de la propiedad")
-
-area_total = st.number_input("Área Total (m²)", min_value=0.0, step=1.0)
-zona = st.number_input("Zona (ID del distrito)", min_value=0, step=1)
-dormitorios = st.number_input("Dormitorios", min_value=0, step=1)
-banos = st.number_input("Baños", min_value=0, step=1)
-estacionamiento = st.number_input("Estacionamiento", min_value=0, step=1)
-municipio = st.number_input("Municipio (ID de área de Lima)", min_value=0, step=1)
-
-# Botón para ejecutar la predicción
-if st.button("🔮 **Calcular Precio**"):
-    precio_estimado, propiedades_similares, precio_minimo, precio_maximo, num_propiedades_min_max, num_propiedades_estimadas = realizar_prediccion(
-        area_total, zona, dormitorios, banos, estacionamiento, municipio)
-
     # Mostrar resultados
-    st.subheader(f"Precio Estimado: {precio_estimado:.2f} USD")
+    st.subheader(f"El precio estimado de la propiedad es: {precio_estimado:.2f} dólares.")
+    st.write(f"Zona: {zona} - Municipio: {municipio}")
     
-    # Mostrar tabla de propiedades similares
-    st.subheader(f"Propiedades Similares:")
-    st.write(propiedades_similares[['Área Total', 'Zona', 'Dormitorios', 'Baños', 'Estacionamiento', 'Municipio', 'Precio Venta']])
-
-    st.subheader(f"Precio Mínimo: {precio_minimo:.2f} USD")
-    st.subheader(f"Precio Máximo: {precio_maximo:.2f} USD")
-    st.subheader(f"Número de Propiedades con Precio Mínimo y Máximo: {num_propiedades_min_max}")
-    st.subheader(f"Número de Propiedades con Precio Estimado y Máximo: {num_propiedades_estimadas}")
-    
-    # Consejos adicionales
-    st.markdown("""
-    **Consejos:**
-    - Si el precio estimado está fuera del rango de propiedades similares, es posible que la propiedad tenga características únicas.
-    - Las propiedades similares te ofrecen una mejor visión del mercado en la zona específica.
-    """)
+    st.subheader("Propiedades Similares:")
+    st.write(propiedades_similares)
