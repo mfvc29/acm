@@ -84,4 +84,5 @@ if st.button("Predecir Precio"):
     st.write(f"Zona: {zona} - Municipio: {municipio}")
     
     st.subheader("Propiedades Similares:")
+    propiedades_similares = propiedades_similares.reset_index(drop=True)
     st.write(propiedades_similares)
