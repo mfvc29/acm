@@ -4,6 +4,12 @@ import pandas as pd
 import joblib
 from sklearn.metrics import pairwise_distances
 
+
+
+# Cargar el modelo previamente guardado
+model = joblib.load('random_forest_model.pkl')
+
+
 # Diccionario de zonas (distritos)
 zonas = {
     'Barranco': 0, 'San Borja': 1, 'Santiago de Surco': 2, 'Miraflores': 3, 'San Isidro': 4, 'La Molina': 5,
@@ -15,9 +21,12 @@ zonas = {
     'Callao': 34, 'Bellavista': 35
 }
 
+# Mostrar el diccionario de zonas en la interfaz
+st.title("Predicción de Precio de Propiedades en Lima")
+st.write("### Diccionario de Zonas y Distritos:")
+st.write(zonas)  # Mostrar el diccionario completo
 
-# Cargar el modelo previamente guardado
-model = joblib.load('random_forest_model.pkl')
+
 
 # Función para predecir el precio y las propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
