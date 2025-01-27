@@ -87,7 +87,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Interfaz de usuario con Streamlit
-st.title("Predicción de Precio de Propiedades en Lima")
+st.title("Predicción de Precio de casas en Lima")
 st.write("Introduce los datos de la propiedad para obtener una estimación de su precio y las propiedades similares.")
 
 # Formularios para los datos de entrada
@@ -101,7 +101,7 @@ if st.button("Predecir Precio"):
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data)
     
     # Mostrar resultados
-    st.subheader(f"El precio estimado de la propiedad es: {precio_estimado:.2f} dólares.")
+    st.subheader(f"El precio estimado de la propiedad es: {precio_estimado:.2f} soles.")
     st.write(f"Zona: {zona} - Municipio: {municipio}")
     
     st.subheader("Propiedades Similares:")
