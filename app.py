@@ -18,6 +18,17 @@ zonas = {
     'Callao': 34, 'Bellavista': 35
 }
 
+# Diccionario de municipios (por zona)
+municipios = {
+    'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
+    'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
+    'Lima Centro': ['Cercado de Lima', 'La Victoria', 'Breña', 'Rímac'],
+    'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón'],
+    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul'],
+    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla'],
+    'Lima Callao': ['La Perla', 'Callao', 'Bellavista']
+}
+
 # Función para predecir el precio y las propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
     entrada = pd.DataFrame({
@@ -46,9 +57,16 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Asignar la zona y municipio según la selección
     zona = list(zonas.keys())[zona_num]  # Obtener el nombre de la zona por su índice
-    municipio = zona  # Municipio es igual a la zona seleccionada
+    municipio = obtener_municipio(zona)  # Obtener el municipio correspondiente
 
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
+
+# Función para obtener el municipio basado en el distrito (zona)
+def obtener_municipio(zona):
+    for municipio, distritos in municipios.items():
+        if zona in distritos:
+            return municipio
+    return 'Municipio desconocido'
 
 # Cargar el dataset
 data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
