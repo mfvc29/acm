@@ -59,7 +59,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     # Revertir logaritmos para mostrar datos originales
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Venta']]
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
 
     # Asignar la zona y municipio según la selección
     zona = list(zonas.keys())[zona_num]  # Obtener el nombre de la zona por su índice
