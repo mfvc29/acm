@@ -123,6 +123,7 @@ if st.button("Predecir Precio"):
 
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
+        propiedades_similares = propiedades_similares.reset_index(drop=True)    
         st.write(propiedades_similares)
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
