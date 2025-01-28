@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
@@ -82,20 +85,53 @@ def obtener_municipio(zona):
 
 # Función para generar el PDF
 def generar_pdf(precio_estimado, propiedades_similares, zona, municipio):
+    # Crear un buffer para el archivo PDF
     buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    c.drawString(100, 750, f"Predicción de Precio - {zona}, {municipio}")
-    c.drawString(100, 730, f"Precio Estimado: {precio_estimado:,.2f} soles")
+    
+    # Configurar el documento
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    
+    # Definir los estilos
+    styles = getSampleStyleSheet()
+    title_style = styles['Title']
+    normal_style = styles['Normal']
+    
+    # Crear una lista de elementos del PDF
+    elements = []
+
+    # Título principal
+    elements.append(Paragraph(f"Predicción de Precio de Propiedad en {zona}, {municipio}", title_style))
+    
+    # Información del precio estimado
+    elements.append(Paragraph(f"<b>Precio Estimado:</b> {precio_estimado:,.2f} soles", normal_style))
+    elements.append(Paragraph("<br />", normal_style))
 
     # Información de propiedades similares
-    y_pos = 700
+    elements.append(Paragraph("<b>Propiedades Similares:</b>", normal_style))
+    
+    # Crear tabla con propiedades similares
+    data = [['Área Total (m²)', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
     for index, row in propiedades_similares.iterrows():
-        c.drawString(100, y_pos, f"Propiedad {index + 1}: {row['Área Total']} m², {row['Dormitorios']} Dormitorios, {row['Baños']} Baños, {row['Estacionamiento']} Estacionamientos, Precio: {row['Precio Venta']:,.2f} soles")
-        y_pos -= 20
-
-    c.showPage()
-    c.save()
+        data.append([f"{row['Área Total']}", f"{row['Dormitorios']}", f"{row['Baños']}", f"{row['Estacionamiento']}", f"{row['Precio Venta']:,.2f} soles"])
+    
+    # Crear la tabla con estilo
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+    ]))
+    elements.append(table)
+    
+    # Generar el documento PDF
+    doc.build(elements)
+    
+    # Regresar al inicio del buffer
     buffer.seek(0)
+    
     return buffer
 
 # Interfaz de usuario
@@ -165,7 +201,7 @@ if st.button("Predecir Precio"):
         st.download_button(
             label="Descargar PDF",
             data=pdf_buffer,
-            file_name="reporte_propiedades.pdf",
+            file_name="reporte_propiedades_detallado.pdf",
             mime="application/pdf"
         )
     else:
