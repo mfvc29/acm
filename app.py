@@ -45,7 +45,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Calcular propiedades similares
     propiedades_similares = data.copy()
-    features = ['Área Total log']
+    features = ['Área Total log','Zona_num']
     distancias = pairwise_distances(entrada[features], propiedades_similares[features])
     indices_similares = np.argsort(distancias[0])[:10]
     propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
