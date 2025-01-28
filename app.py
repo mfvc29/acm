@@ -76,7 +76,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     # Mapear la zona numérica a su nombre de municipio
     if zona_num <= 5:
         zona = zonas_municipios[0]
-        municipio = ["Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina"][zona_num]
+        municipio = ["Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina",'Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo','Cercado de Lima', 'La Victoria', 'Breña', 'Rímac', 'Carabayllo', 'Comas','San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón', 'Chorrillos','Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul', 'Ate Vitarte','Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla', 'La Perla','Callao', 'Bellavista'][zona_num]
     else:
         zona = 'Zona desconocida'
         municipio = 'Municipio desconocido'
