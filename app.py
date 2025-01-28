@@ -4,11 +4,8 @@ import pandas as pd
 import joblib
 from sklearn.metrics import pairwise_distances
 
-
-
 # Cargar el modelo previamente guardado
 model = joblib.load('random_forest_model.pkl')
-
 
 # Diccionario de zonas (distritos)
 zonas = {
@@ -21,12 +18,16 @@ zonas = {
     'Callao': 34, 'Bellavista': 35
 }
 
-# Mostrar el diccionario de zonas en la interfaz
-st.title("Predicción de Precio de Propiedades en Lima")
-st.write("### Diccionario de Zonas y Distritos:")
-st.write(zonas)  # Mostrar el diccionario completo
-
-
+# Zonas y municipios
+zonas_municipios = {
+    'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
+    'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
+    'Lima Centro': ['Cercado de Lima', 'La Victoria', 'Breña', 'Rímac'],
+    'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón'],
+    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul'],
+    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla'],
+    'Lima Callao': ['La Perla', 'Callao', 'Bellavista']
+}
 
 # Función para predecir el precio y las propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
@@ -40,63 +41,32 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Predicción del precio en logaritmo
     prediccion_log = model.predict(entrada)
+    precio_venta_pred = np.expm1(prediccion_log)[0]  # Convertir logaritmo a escala original
 
-    # Convertir la predicción de logaritmo a la escala original
-    precio_venta_pred = np.expm1(prediccion_log)[0]
-
-    # Calcular distancias para encontrar propiedades similares
+    # Calcular propiedades similares
     propiedades_similares = data.copy()
-
-    # Calcular la distancia euclidiana entre la entrada y el dataset
     features = ['Área Total log', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']
     distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-    indices_similares = np.argsort(distancias[0])[:10]  # Tomar los 5 más cercanos
-
-    # Seleccionar propiedades similares
+    indices_similares = np.argsort(distancias[0])[:10]
     propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
 
-    # Revertir logaritmo para mostrar los valores originales
+    # Revertir logaritmos
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
-
-    # Eliminar las columnas logarítmicas para claridad
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Venta']]
 
-    # Zonas y municipios
-    zonas_municipios = {
-        0: 'Lima Top',
-        1: 'Lima Moderna',
-        2: 'Lima Centro',
-        3: 'Lima Norte',
-        4: 'Lima Sur',
-        5: 'Lima Este',
-        6: 'Lima Callao'
-    }
-    # Lista de municipios
-    municipios = [
-    "Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina",
-    "Jesús María", "Pueblo Libre", "Lince", "San Miguel", "Magdalena del Mar", "Surquillo",
-    "Cercado de Lima", "La Victoria", "Breña", "Rímac", "Carabayllo", "Comas", "San Martín de Porres",
-    "Independencia", "Los Olivos", "Ancón", "Chorrillos", "Punta Hermosa", "San Bartolo", "Punta Negra",
-    "Cerro Azul", "Ate Vitarte", "Chaclacayo", "Chosica", "San Luis", "El Agustino", "Cieneguilla",
-    "La Perla", "Callao", "Bellavista"]
-
-    # Mapear la zona numérica a su nombre de zona y municipio
-    if zona_num >= 0 and zona_num <= 6:  # Comprobamos si zona_num está dentro del rango de zonas
-       zona = zonas_municipios.get(zona_num, 'Zona desconocida')  # Obtener el nombre de la zona
+    # Asignar la zona y municipio según la selección
+    if zona_num in range(0, 6):  # Comprobamos si el número de zona está en el rango correcto
+        zona = list(zonas_municipios.keys())[zona_num]  # Obtener el nombre de la zona por su índice
+        municipio = zonas_municipios[zona][zona_num]  # Obtener el municipio según la zona y número
     else:
-     zona = 'Zona desconocida'
+        zona = 'Zona desconocida'
+        municipio = 'Municipio desconocido'
 
-    # Verificar que el municipio esté dentro del rango válido
-    if 0 <= zona_num < 34:
-     municipio = municipios[zona_num]
-    else:
-     municipio = 'Municipio desconocido'
-
-   # Retornar los resultados
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
-# Cargar el dataset (asegúrate de que el archivo "dataset.csv" esté en la misma carpeta)
+
+# Cargar el dataset
 data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Interfaz de usuario con Streamlit
@@ -108,7 +78,13 @@ area_total = st.number_input("Área Total (m²)", min_value=1)
 dormitorios = st.number_input("Número de Dormitorios", min_value=1)
 banos = st.number_input("Número de Baños", min_value=1)
 estacionamiento = st.number_input("Número de Estacionamientos", min_value=0)
-zona_num = st.number_input("Número de Zona (0-35)", min_value=0, max_value=35)
+
+# Usar un dropdown para seleccionar la zona por nombre, no número
+zona_options = ['Lima Top', 'Lima Moderna', 'Lima Centro', 'Lima Norte', 'Lima Sur', 'Lima Este', 'Lima Callao']
+zona_select = st.selectbox("Selecciona la Zona", zona_options)
+
+# Buscar el índice de la zona seleccionada
+zona_num = zona_options.index(zona_select)
 
 if st.button("Predecir Precio"):
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data)
