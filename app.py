@@ -18,17 +18,6 @@ zonas = {
     'Callao': 34, 'Bellavista': 35
 }
 
-# Zonas y municipios
-zonas_municipios = {
-    'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
-    'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
-    'Lima Centro': ['Cercado de Lima', 'La Victoria', 'Breña', 'Rímac'],
-    'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón'],
-    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul'],
-    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla'],
-    'Lima Callao': ['La Perla', 'Callao', 'Bellavista']
-}
-
 # Función para predecir el precio y las propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
     entrada = pd.DataFrame({
@@ -56,15 +45,10 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Venta']]
 
     # Asignar la zona y municipio según la selección
-    if zona_num in range(0, 6):  # Comprobamos si el número de zona está en el rango correcto
-        zona = list(zonas_municipios.keys())[zona_num]  # Obtener el nombre de la zona por su índice
-        municipio = zonas_municipios[zona][zona_num]  # Obtener el municipio según la zona y número
-    else:
-        zona = 'Zona desconocida'
-        municipio = 'Municipio desconocido'
+    zona = list(zonas.keys())[zona_num]  # Obtener el nombre de la zona por su índice
+    municipio = zona  # Municipio es igual a la zona seleccionada
 
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
-
 
 # Cargar el dataset
 data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
@@ -79,19 +63,18 @@ dormitorios = st.number_input("Número de Dormitorios", min_value=1)
 banos = st.number_input("Número de Baños", min_value=1)
 estacionamiento = st.number_input("Número de Estacionamientos", min_value=0)
 
-# Usar un dropdown para seleccionar la zona por nombre, no número
-zona_options = ['Lima Top', 'Lima Moderna', 'Lima Centro', 'Lima Norte', 'Lima Sur', 'Lima Este', 'Lima Callao']
-zona_select = st.selectbox("Selecciona la Zona", zona_options)
+# Usar un dropdown para seleccionar el distrito
+zona_select = st.selectbox("Selecciona el Distrito", list(zonas.keys()))
 
-# Buscar el índice de la zona seleccionada
-zona_num = zona_options.index(zona_select)
+# Obtener el número de zona correspondiente
+zona_num = zonas[zona_select]
 
 if st.button("Predecir Precio"):
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data)
     
     # Mostrar resultados
     st.subheader(f"El precio estimado de la propiedad es: {precio_estimado:.2f} soles.")
-    st.write(f"Zona: {zona} - Municipio: {municipio}")
+    st.write(f"Distrito: {zona} - Municipio: {municipio}")
     
     st.subheader("Propiedades Similares:")
     propiedades_similares = propiedades_similares.reset_index(drop=True)
