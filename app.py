@@ -5,8 +5,13 @@ import joblib
 from sklearn.metrics import pairwise_distances
 import matplotlib.pyplot as plt
 
-# Cargar el modelo previamente guardado
-model = joblib.load('random_forest_model.pkl')
+# Cargar los modelos previamente guardados
+model_casas = joblib.load('random_forest_model.pkl')
+model_departamentos = joblib.load('random_forest_model_du.pkl')
+
+# Cargar datasets
+data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
 zonas = {
@@ -31,7 +36,7 @@ municipios = {
 }
 
 # Función para predecir precio y propiedades similares
-def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
+def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
@@ -72,12 +77,12 @@ def obtener_municipio(zona):
             return municipio
     return 'Municipio desconocido'
 
-# Cargar dataset
-data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
-
 # Interfaz de usuario
-st.title("🏡 Predicción de Precio de Casas en Lima")
-st.write("Introduce los datos de la propiedad para obtener una estimación del precio y visualizar las propiedades similares.")
+st.title("🏡 Predicción de Precios de Propiedades en Lima")
+st.write("Selecciona el tipo de propiedad y proporciona los datos correspondientes para obtener una estimación del precio y ver las propiedades similares.")
+
+# Opción para seleccionar el tipo de propiedad
+tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
 # Formulario de entrada
 area_total = st.number_input("📏 Área Total (m²)", min_value=1)
@@ -89,8 +94,15 @@ zona_num = zonas[zona_select]
 
 # Botón para realizar la predicción
 if st.button("Predecir Precio"):
+    if tipo_propiedad == "Casa":
+        modelo = model_casas
+        data = data_casas
+    else:
+        modelo = model_departamentos
+        data = data_departamentos
+    
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
-        area_total, dormitorios, banos, estacionamiento, zona_num, data)
+        area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
 
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
