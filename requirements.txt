@@ -2,7 +2,7 @@ streamlit
 pandas
 scikit-learn
 xgboost
-reportlab
 numpy
 joblib
 matplotlib
+reportlab
