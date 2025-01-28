@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import joblib
 from sklearn.metrics import pairwise_distances
+import matplotlib.pyplot as plt
 
 # Cargar el modelo previamente guardado
 model = joblib.load('random_forest_model.pkl')
@@ -45,11 +46,9 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Calcular propiedades similares solo dentro de la misma zona
     propiedades_similares = data[data['Zona_num'] == zona_num].copy()  # Filtrar por zona
-    if propiedades_similares.empty:
-      return precio_venta_pred, pd.DataFrame(), zona, municipio  # Manejar casos donde no haya propiedades en la misma zona
 
     # Calcular distancias solo en las propiedades filtradas
-    features = ['Área Total log', 'Zona_num']  # Asegúrate de que las columnas sean correctas
+    features = ['Área Total log', 'Zona_num']
     distancias = pairwise_distances(entrada[features], propiedades_similares[features])
 
     # Obtener los índices de las 10 propiedades más cercanas
@@ -103,3 +102,14 @@ if st.button("Predecir Precio"):
     st.subheader("Propiedades Similares:")
     propiedades_similares = propiedades_similares.reset_index(drop=True)
     st.write(propiedades_similares)
+
+    # Visualizar gráfico de barras
+    if not propiedades_similares.empty:
+        precio_min = propiedades_similares['Precio Venta'].min()
+        precio_max = propiedades_similares['Precio Venta'].max()
+
+        fig, ax = plt.subplots()
+        ax.bar(['Precio Mínimo', 'Precio Predicho', 'Precio Máximo'], [precio_min, precio_estimado, precio_max], color=['blue', 'orange', 'green'])
+        ax.set_ylabel("Precio Venta (Soles)")
+        ax.set_title("Comparación de Precios")
+        st.pyplot(fig)
