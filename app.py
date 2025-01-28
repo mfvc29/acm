@@ -4,9 +4,9 @@ import pandas as pd
 import joblib
 from sklearn.metrics import pairwise_distances
 import matplotlib.pyplot as plt
+import io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-import io
 
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
@@ -80,30 +80,23 @@ def obtener_municipio(zona):
             return municipio
     return 'Municipio desconocido'
 
-# Función para crear el PDF
-def crear_pdf(precio_estimado, propiedades_similares, zona, municipio):
-    archivo = io.BytesIO()
-    c = canvas.Canvas(archivo, pagesize=letter)
+# Función para generar el PDF
+def generar_pdf(precio_estimado, propiedades_similares, zona, municipio):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    c.drawString(100, 750, f"Predicción de Precio - {zona}, {municipio}")
+    c.drawString(100, 730, f"Precio Estimado: {precio_estimado:,.2f} soles")
 
-    # Título
-    c.drawString(100, 800, f"Predicción de Precios de Propiedades en {zona}, {municipio}")
-
-    # Agregar el precio estimado
-    c.drawString(100, 770, f"Precio Estimado: {precio_estimado:,.2f} soles")
-
-    # Agregar detalles de las propiedades similares
-    y_pos = 740
-    for i, row in propiedades_similares.iterrows():
-        c.drawString(100, y_pos, f"Propiedad {i+1}:")
-        c.drawString(100, y_pos - 20, f"Área Total: {row['Área Total']:.2f} m²")
-        c.drawString(100, y_pos - 40, f"Precio Venta: {row['Precio Venta']:.2f} soles")
-        y_pos -= 60  # Espaciado para las siguientes propiedades
+    # Información de propiedades similares
+    y_pos = 700
+    for index, row in propiedades_similares.iterrows():
+        c.drawString(100, y_pos, f"Propiedad {index + 1}: {row['Área Total']} m², {row['Dormitorios']} Dormitorios, {row['Baños']} Baños, {row['Estacionamiento']} Estacionamientos, Precio: {row['Precio Venta']:,.2f} soles")
+        y_pos -= 20
 
     c.showPage()
     c.save()
-
-    archivo.seek(0)
-    return archivo
+    buffer.seek(0)
+    return buffer
 
 # Interfaz de usuario
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
@@ -166,9 +159,14 @@ if st.button("Predecir Precio"):
         propiedades_similares = propiedades_similares.reset_index(drop=True)    
         st.write(propiedades_similares)
 
-        # Botón para descargar el PDF
-        if st.button("Descargar PDF"):
-            archivo_pdf = crear_pdf(precio_estimado, propiedades_similares, zona, municipio)
-            st.download_button(label="Descargar archivo PDF", data=archivo_pdf, file_name="resultados_prediccion.pdf", mime="application/pdf")
+        # Descargar PDF con los resultados
+        st.subheader("📥 Descargar Reporte en PDF")
+        pdf_buffer = generar_pdf(precio_estimado, propiedades_similares, zona, municipio)
+        st.download_button(
+            label="Descargar PDF",
+            data=pdf_buffer,
+            file_name="reporte_propiedades.pdf",
+            mime="application/pdf"
+        )
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
