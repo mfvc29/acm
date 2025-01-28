@@ -30,10 +30,10 @@ municipios = {
     'Lima Callao': ['La Perla', 'Callao', 'Bellavista']
 }
 
-# Función para predecir el precio y las propiedades similares
+# Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data):
     entrada = pd.DataFrame({
-        'Área Total log': [np.log1p(area_total)],  # Aplicar log para el modelo
+        'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
         'Baños': [banos],
         'Estacionamiento': [estacionamiento],
@@ -42,74 +42,87 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Predicción del precio en logaritmo
     prediccion_log = model.predict(entrada)
-    precio_venta_pred = np.expm1(prediccion_log)[0]  # Convertir logaritmo a escala original
+    precio_venta_pred = np.expm1(prediccion_log)[0]
 
-    # Calcular propiedades similares solo dentro de la misma zona
-    propiedades_similares = data[data['Zona_num'] == zona_num].copy()  # Filtrar por zona
+    # Filtrar propiedades similares por zona
+    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+    if propiedades_similares.empty:
+        return precio_venta_pred, pd.DataFrame(), None, None
 
-    # Calcular distancias solo en las propiedades filtradas
+    # Distancias
     features = ['Área Total log', 'Zona_num']
     distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-
-    # Obtener los índices de las 10 propiedades más cercanas
     indices_similares = np.argsort(distancias[0])[:10]
     propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
 
-    # Revertir logaritmos para mostrar datos originales
+    # Revertir logaritmos
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
 
-    # Asignar la zona y municipio según la selección
-    zona = list(zonas.keys())[zona_num]  # Obtener el nombre de la zona por su índice
-    municipio = obtener_municipio(zona)  # Obtener el municipio correspondiente
-
+    # Asignar la zona y el municipio
+    zona = list(zonas.keys())[zona_num]
+    municipio = obtener_municipio(zona)
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
-# Función para obtener el municipio basado en el distrito (zona)
+# Función para obtener municipio basado en zona
 def obtener_municipio(zona):
     for municipio, distritos in municipios.items():
         if zona in distritos:
             return municipio
     return 'Municipio desconocido'
 
-# Cargar el dataset
+# Cargar dataset
 data = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 
-# Interfaz de usuario con Streamlit
-st.title("Predicción de Precio de casas en Lima")
-st.write("Introduce los datos de la propiedad para obtener una estimación de su precio y las propiedades similares.")
+# Interfaz de usuario
+st.title("🏡 Predicción de Precio de Casas en Lima")
+st.write("Introduce los datos de la propiedad para obtener una estimación del precio y visualizar las propiedades similares.")
 
-# Formularios para los datos de entrada
-area_total = st.number_input("Área Total (m²)", min_value=1)
-dormitorios = st.number_input("Número de Dormitorios", min_value=1)
-banos = st.number_input("Número de Baños", min_value=1)
-estacionamiento = st.number_input("Número de Estacionamientos", min_value=0)
-
-# Usar un dropdown para seleccionar el distrito
-zona_select = st.selectbox("Selecciona el Distrito", list(zonas.keys()))
-
-# Obtener el número de zona correspondiente
+# Formulario de entrada
+area_total = st.number_input("📏 Área Total (m²)", min_value=1)
+dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
+banos = st.number_input("🚿 Número de Baños", min_value=1)
+estacionamiento = st.number_input("🚗 Número de Estacionamientos", min_value=0)
+zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
 
+# Botón para realizar la predicción
 if st.button("Predecir Precio"):
-    precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data)
-    
-    # Mostrar resultados
-    st.subheader(f"El precio estimado de la propiedad es: {precio_estimado:.2f} soles.")
-    st.write(f"Distrito: {zona} - Municipio: {municipio}")
-    
-    st.subheader("Propiedades Similares:")
-    propiedades_similares = propiedades_similares.reset_index(drop=True)
-    st.write(propiedades_similares)
+    precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
+        area_total, dormitorios, banos, estacionamiento, zona_num, data)
 
-    # Visualizar gráfico de barras
+    # Mostrar resultados
+    st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
+    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
+
     if not propiedades_similares.empty:
+        # Calcular valores clave
         precio_min = propiedades_similares['Precio Venta'].min()
         precio_max = propiedades_similares['Precio Venta'].max()
+        diferencia_min = precio_estimado - precio_min
+        diferencia_max = precio_max - precio_estimado
 
-        fig, ax = plt.subplots()
-        ax.bar(['Precio Mínimo', 'Precio Predicho', 'Precio Máximo'], [precio_min, precio_estimado, precio_max], color=['blue', 'orange', 'green'])
-        ax.set_ylabel("Precio Venta (Soles)")
+        # Indicadores adicionales
+        st.metric("Precio Mínimo", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
+        st.metric("Precio Máximo", f"{precio_max:,.2f} soles", f"Diferencia: {diferencia_max:,.2f}")
+
+        # Gráfico de barras
+        st.subheader("📈 Comparación de Precios")
+        fig, ax = plt.subplots(figsize=(8, 4))
+        labels = ['Precio Mínimo', 'Precio Estimado', 'Precio Máximo']
+        valores = [precio_min, precio_estimado, precio_max]
+        colores = ['#1f77b4', '#ff7f0e', '#2ca02c']
+
+        ax.barh(labels, valores, color=colores, alpha=0.8, edgecolor='black')
+        for i, valor in enumerate(valores):
+            ax.text(valor, i, f"{valor:,.2f} soles", va='center', ha='left', fontsize=10)
+        ax.set_xlabel("Precio en soles")
         ax.set_title("Comparación de Precios")
         st.pyplot(fig)
+
+        # Tabla de propiedades similares
+        st.subheader("🏘 Propiedades Similares")
+        st.write(propiedades_similares)
+    else:
+        st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
