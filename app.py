@@ -74,12 +74,13 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     }
     # Lista de municipios
     municipios = [
-    "Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina",
-    'Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo',
-    'Cercado de Lima', 'La Victoria', 'Breña', 'Rímac', 'Carabayllo', 'Comas', 'San Martín de Porres',
-    'Independencia', 'Los Olivos', 'Ancón', 'Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra',
-    'Cerro Azul', 'Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla',
-    'La Perla', 'Callao', 'Bellavista']
+    "Jesús María", "Pueblo Libre", "Lince", "San Miguel", "Magdalena del Mar", "Surquillo",
+    "Cercado de Lima", "La Victoria", "Breña", "Rímac", "Carabayllo", "Comas", "San Martín de Porres",
+    "Independencia", "Los Olivos", "Ancón", "Chorrillos", "Punta Hermosa", "San Bartolo", "Punta Negra",
+    "Cerro Azul", "Ate Vitarte", "Chaclacayo", "Chosica", "San Luis", "El Agustino", "Cieneguilla",
+    "La Perla", "Callao", "Bellavista"
+    ]
+
 
     # Mapear la zona numérica a su nombre de zona y municipio
     if zona_num >= 0 and zona_num <= 6:  # Comprobamos si zona_num está dentro del rango de zonas
