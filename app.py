@@ -72,15 +72,28 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
         5: 'Lima Este',
         6: 'Lima Callao'
     }
+    # Lista de municipios
+    municipios = [
+    "Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina",
+    'Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo',
+    'Cercado de Lima', 'La Victoria', 'Breña', 'Rímac', 'Carabayllo', 'Comas', 'San Martín de Porres',
+    'Independencia', 'Los Olivos', 'Ancón', 'Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra',
+    'Cerro Azul', 'Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla',
+    'La Perla', 'Callao', 'Bellavista']
 
-    # Mapear la zona numérica a su nombre de municipio
-    if zona_num <= 35:
-        zona = zonas_municipios[0]
-        municipio = ["Barranco", "San Borja", "Santiago de Surco", "Miraflores", "San Isidro", "La Molina",'Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo','Cercado de Lima', 'La Victoria', 'Breña', 'Rímac', 'Carabayllo', 'Comas','San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón', 'Chorrillos','Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul', 'Ate Vitarte','Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla', 'La Perla','Callao', 'Bellavista'][zona_num]
+    # Mapear la zona numérica a su nombre de zona y municipio
+    if zona_num >= 0 and zona_num <= 6:  # Comprobamos si zona_num está dentro del rango de zonas
+       zona = zonas_municipios.get(zona_num, 'Zona desconocida')  # Obtener el nombre de la zona
     else:
-        zona = 'Zona desconocida'
-        municipio = 'Municipio desconocido'
+       zona = 'Zona desconocida'
 
+    # Verificar que el municipio esté dentro del rango válido
+    if 0 <= zona_num < len(municipios):
+     municipio = municipios[zona_num]
+    else:
+     municipio = 'Municipio desconocido'
+
+   # Retornar los resultados
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
 # Cargar el dataset (asegúrate de que el archivo "dataset.csv" esté en la misma carpeta)
