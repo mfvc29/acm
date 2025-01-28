@@ -43,14 +43,20 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     prediccion_log = model.predict(entrada)
     precio_venta_pred = np.expm1(prediccion_log)[0]  # Convertir logaritmo a escala original
 
-    # Calcular propiedades similares
-    propiedades_similares = data.copy()
-    features = ['Área Total log','Zona_num']
-    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-    indices_similares = np.argsort(distancias[0])[:10]
-    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+    # Calcular propiedades similares solo dentro de la misma zona
+    propiedades_similares = data[data['Zona_num'] == zona_num].copy()  # Filtrar por zona
+    if propiedades_similares.empty:
+      return precio_venta_pred, pd.DataFrame(), zona, municipio  # Manejar casos donde no haya propiedades en la misma zona
 
-    # Revertir logaritmos
+    # Calcular distancias solo en las propiedades filtradas
+      features = ['Área Total log', 'Zona_num']  # Asegúrate de que las columnas sean correctas
+      distancias = pairwise_distances(entrada[features], propiedades_similares[features])
+
+    # Obtener los índices de las 10 propiedades más cercanas
+      indices_similares = np.argsort(distancias[0])[:10]
+      propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+
+   # Revertir logaritmos para mostrar datos originales
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Venta']]
