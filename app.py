@@ -82,7 +82,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     "La Perla", "Callao", "Bellavista"]
 
     # Mapear la zona numérica a su nombre de zona y municipio
-    if zona_num >= 0 and zona_num <= 6:  # Comprobamos si zona_num está dentro del rango de zonas
+    if zona_num >= 0 and zona_num <= 35:  # Comprobamos si zona_num está dentro del rango de zonas
        zona = zonas_municipios.get(zona_num, 'Zona desconocida')  # Obtener el nombre de la zona
     else:
        zona = 'Zona desconocida'
