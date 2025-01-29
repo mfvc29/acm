@@ -114,18 +114,20 @@ if st.button("Predecir Precio"):
     propiedades_similares['Estacionamiento'] = propiedades_similares['Estacionamiento'].astype(int)
     propiedades_similares['Dormitorios'] = propiedades_similares['Dormitorios'].astype(int)
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
-    
+ 
+    # Mostrar los resultados
+    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
+
+    # Convertir el precio estimado a dólares
+    precio_estimado_dolares = precio_estimado / tipo_cambio
+        
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
     st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
     st.metric("💵 Precio Estimado: {precio_estimado_dolares:,.2f} dólares*")
     st.metri("💵 Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar")
     
-    # Mostrar los resultados
-    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
 
-    # Convertir el precio estimado a dólares
-    precio_estimado_dolares = precio_estimado / tipo_cambio
     
     
     if not propiedades_similares.empty:
