@@ -65,9 +65,6 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
     
-    
-
-    
     # Asignar la zona y el municipio
     zona = list(zonas.keys())[zona_num]
     municipio = obtener_municipio(zona)
@@ -107,10 +104,7 @@ if st.button("Predecir Precio"):
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
         area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
 
-
-
     propiedades_similares['Área Total'] = propiedades_similares['Área Total'].round(2)
-
     propiedades_similares['Estacionamiento'] = propiedades_similares['Estacionamiento'].astype(int)
     propiedades_similares['Dormitorios'] = propiedades_similares['Dormitorios'].astype(int)
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
@@ -124,12 +118,9 @@ if st.button("Predecir Precio"):
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
     st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
-    st.metric("💵 Precio Estimado: {precio_estimado_dolares:,.2f} dólares*")
-    st.metri("💵 Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar")
-    
+    st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares")
+    st.metric("💵 Tipo de cambio utilizado", f"{tipo_cambio:,.2f} soles por dólar")
 
-    
-    
     if not propiedades_similares.empty:
         # Calcular valores clave
         precio_min = propiedades_similares['Precio Venta'].min()
