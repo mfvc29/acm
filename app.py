@@ -110,14 +110,14 @@ if st.button("Predecir Precio"):
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
  
     # Mostrar los resultados
-    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
+    tipo_cambio = 3.71  # Tipo de cambio de soles a dólares
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
         
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
-    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
+    st.metric("💵 Precio Estimado en soles", f"{precio_estimado:,.2f} soles")
     st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
 
