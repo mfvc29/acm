@@ -52,24 +52,24 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
         'Zona_num': [zona_num],
     })
     prediccion_log = model.predict(entrada)
-    precio_venta_pred = max(0, np.expm1(prediccion_log)[0])
-    zona = next((k for k, v in zonas.items() if v == zona_num), "Zona desconocida")
-    municipio = obtener_municipio(zona)
+    precio_venta_pred = np.expm1(prediccion_log)[0]
     propiedades_similares = data[data['Zona_num'] == zona_num].copy()
     if propiedades_similares.empty:
-        return precio_venta_pred, pd.DataFrame(), zona, municipio
+        return precio_venta_pred, pd.DataFrame(), None, None
     distancias = pairwise_distances(entrada[['Área Total log', 'Zona_num']], propiedades_similares[['Área Total log', 'Zona_num']])
     indices_similares = np.argsort(distancias[0])[:10]
     propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
+    zona = next((k for k, v in zonas.items() if v == zona_num), None)
+    municipio = obtener_municipio(zona) if zona else None
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
-area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
+area_total = st.number_input("📏 Área Total (m²)", min_value=0.1, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
-banos = st.number_input("🚿 Número de Baños", min_value=1)
+banos = st.number_input("🚿 Número de Baños", min_value=0)
 estacionamiento = st.number_input("🚗 Número de Estacionamientos", min_value=0)
 zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
