@@ -21,7 +21,11 @@ zonas = {
     'San Martín de Porres': 18, 'Independencia': 19, 'Los Olivos': 20, 'Ancón': 21, 'Chorrillos': 22,
     'Punta Hermosa': 23, 'San Bartolo': 24, 'Punta Negra': 25, 'Cerro Azul': 26, 'Ate Vitarte': 27,
     'Chaclacayo': 28, 'Chosica': 29, 'San Luis': 30, 'El Agustino': 31, 'Cieneguilla': 32, 'La Perla': 33,
-    'Callao': 34, 'Bellavista': 35
+    'Callao': 34, 'Bellavista': 35, 'Villa El Salvador': 36, 'Villa María del Triunfo': 37,
+    'San Juan de Miraflores': 38, 'San Juan de Lurigancho': 39, 'Santa Anita': 40, 'Puente Piedra': 41,
+    'Pucusana': 42, 'Lurín': 43, 'Huaral': 44, 'Huaura': 45, 'Canta': 46, 'Mala': 47,
+    'Asia': 48, 'Cañete': 49, 'Barranca': 50, 'Ricardo Palma': 51, 'Quilmana': 52, 'Huarochiri': 53,
+    'Huacho': 54
 }
 
 # Diccionario de municipios (por zona)
@@ -29,11 +33,13 @@ municipios = {
     'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
     'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
     'Lima Centro': ['Cercado de Lima', 'La Victoria', 'Breña', 'Rímac'],
-    'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón'],
-    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul'],
-    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla'],
-    'Lima Callao': ['La Perla', 'Callao', 'Bellavista']
+    'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón', 'Puente Piedra'],
+    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul', 'Villa El Salvador', 'Villa María del Triunfo', 'San Juan de Miraflores', 'Lurín', 'Pucusana'],
+    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla', 'Santa Anita', 'San Juan de Lurigancho'],
+    'Lima Callao': ['La Perla', 'Callao', 'Bellavista'],
+    'Fuera de Lima': ['Huaral', 'Huaura', 'Canta', 'Mala', 'Asia', 'Cañete', 'Barranca', 'Ricardo Palma', 'Quilmana', 'Huarochiri', 'Huacho']
 }
+
 
 # Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
@@ -110,14 +116,14 @@ if st.button("Predecir Precio"):
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
  
     # Mostrar los resultados
-    tipo_cambio = 3.71  # Tipo de cambio de soles a dólares
+    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
         
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
-    st.metric("💵 Precio Estimado en soles", f"{precio_estimado:,.2f} soles")
+    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
     st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
 
