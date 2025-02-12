@@ -15,17 +15,17 @@ data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'
 
 # Diccionario de zonas (distritos)
 zonas = {
-    'Barranco': 0, 'San Borja': 1, 'Santiago de Surco': 2, 'Miraflores': 3, 'San Isidro': 4, 'La Molina': 5,
-    'Jesús María': 6, 'Pueblo Libre': 7, 'Lince': 8, 'San Miguel': 9, 'Magdalena del Mar': 10, 'Surquillo': 11,
-    'Cercado de Lima': 12, 'La Victoria': 13, 'Breña': 14, 'Rímac': 15, 'Carabayllo': 16, 'Comas': 17,
-    'San Martín de Porres': 18, 'Independencia': 19, 'Los Olivos': 20, 'Ancón': 21, 'Chorrillos': 22,
-    'Punta Hermosa': 23, 'San Bartolo': 24, 'Punta Negra': 25, 'Cerro Azul': 26, 'Ate Vitarte': 27,
-    'Chaclacayo': 28, 'Chosica': 29, 'San Luis': 30, 'El Agustino': 31, 'Cieneguilla': 32, 'La Perla': 33,
-    'Callao': 34, 'Bellavista': 35, 'Villa El Salvador': 36, 'Villa María del Triunfo': 37,
-    'San Juan de Miraflores': 38, 'San Juan de Lurigancho': 39, 'Santa Anita': 40, 'Puente Piedra': 41,
-    'Pucusana': 42, 'Lurín': 43, 'Huaral': 44, 'Huaura': 45, 'Canta': 46, 'Mala': 47,
-    'Asia': 48, 'Cañete': 49, 'Barranca': 50, 'Ricardo Palma': 51, 'Quilmana': 52, 'Huarochiri': 53,
-    'Huacho': 54
+    "Ancón": 1, "Ate Vitarte": 2, "Barranco": 3, "Breña": 4, "Carabayllo": 5, "Cercado de Lima": 6,
+    "Chaclacayo": 7, "Chorrillos": 8, "Chosica": 9, "Cieneguilla": 10, "Comas": 11, "El Agustino": 12,
+    "Independencia": 13, "Jesús María": 14, "La Molina": 15, "La Victoria": 16, "Lince": 17,
+    "Los Olivos": 18, "Lurín": 19, "Magdalena del Mar": 20, "Miraflores": 21, "Pachacamac": 22,
+    "Pucusana": 23, "Pueblo Libre": 24, "Puente Piedra": 25, "Punta Hermosa": 26, "Punta Negra": 27,
+    "Rímac": 28, "San Bartolo": 29, "San Borja": 30, "San Isidro": 31, "San Juan de Lurigancho": 32,
+    "San Juan de Miraflores": 33, "San Luis": 34, "San Martín de Porres": 35, "San Miguel": 36,
+    "Santa Anita": 37, "Santa María del Mar": 38, "Santiago de Surco": 39, "Surquillo": 40,
+    "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43,
+    "Asia": 44, "Barranca": 45, "Canta": 46, "Cañete": 47, "Huacho": 48, "Huaral": 49,
+    "Huarochiri": 50, "Huaura": 51, "Mala": 52, "Quilmana": 53, "Ricardo Palma": 54
 }
 
 # Diccionario de municipios (por zona)
@@ -34,7 +34,7 @@ municipios = {
     'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
     'Lima Centro': ['Cercado de Lima', 'La Victoria', 'Breña', 'Rímac'],
     'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón', 'Puente Piedra'],
-    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul', 'Villa El Salvador', 'Villa María del Triunfo', 'San Juan de Miraflores', 'Lurín', 'Pucusana'],
+    'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Cerro Azul', 'Villa El Salvador', 'Villa María del Triunfo', 'San Juan de Miraflores', 'Lurín', 'Pucusana', 'Pachacamac', 'Santa María del Mar'],
     'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla', 'Santa Anita', 'San Juan de Lurigancho'],
     'Lima Callao': ['La Perla', 'Callao', 'Bellavista'],
     'Fuera de Lima': ['Huaral', 'Huaura', 'Canta', 'Mala', 'Asia', 'Cañete', 'Barranca', 'Ricardo Palma', 'Quilmana', 'Huarochiri', 'Huacho']
