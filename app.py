@@ -38,6 +38,7 @@ municipios = {
 }
 
 # Función para predecir precio y propiedades similares
+# Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
