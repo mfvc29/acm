@@ -23,7 +23,8 @@ zonas = {
     "Rímac": 28, "San Bartolo": 29, "San Borja": 30, "San Isidro": 31, "San Juan de Lurigancho": 32,
     "San Juan de Miraflores": 33, "San Luis": 34, "San Martín de Porres": 35, "San Miguel": 36,
     "Santa Anita": 37, "Santa María del Mar": 38, "Santiago de Surco": 39, "Surquillo": 40,
-    "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43
+    "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43,"Asia": 44, "Barranca": 45, "Canta": 46, "Cañete": 47, "Huacho": 48, "Huaral": 49,
+    "Huarochiri": 50, "Huaura": 51, "Mala": 52, "Quilmana": 53, "Ricardo Palma": 54
 }
 
 # Diccionario de municipios
@@ -34,7 +35,8 @@ municipios = {
     'Lima Norte': ['Carabayllo', 'Comas', 'San Martín de Porres', 'Independencia', 'Los Olivos', 'Ancón', 'Puente Piedra'],
     'Lima Sur': ['Chorrillos', 'Punta Hermosa', 'San Bartolo', 'Punta Negra', 'Villa El Salvador', 'Villa María del Triunfo', 'San Juan de Miraflores', 'Lurín', 'Pucusana', 'Pachacamac', 'Santa María del Mar'],
     'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'San Luis', 'El Agustino', 'Cieneguilla', 'Santa Anita', 'San Juan de Lurigancho'],
-    'Lima Callao': ['Callao']
+    'Lima Callao': ['Callao'],
+    'Lima Provincias': ['Asia', 'Barranca', 'Canta', 'Cañete', 'Huacho', 'Huaral', 'Huarochiri', 'Huaura', 'Mala', 'Quilmana', 'Ricardo Palma']
 }
 
 # Función para obtener municipio basado en zona
