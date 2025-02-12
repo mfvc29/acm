@@ -94,9 +94,9 @@ st.write("Selecciona el tipo de propiedad y proporciona los datos correspondient
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
 # Formulario de entrada
-area_total = st.number_input("📏 Área Total (m²)", min_value=0.1, format="%.2f")
+area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
-banos = st.number_input("🚿 Número de Baños", min_value=1)
+banos = st.number_input("🚿 Número de Baños", min_value=0)
 estacionamiento = st.number_input("🚗 Número de Estacionamientos", min_value=0)
 zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
