@@ -37,7 +37,13 @@ municipios = {
     'Lima Callao': ['Callao']
 }
 
-# Función para predecir precio y propiedades similares
+# Función para obtener municipio basado en zona
+def obtener_municipio(zona):
+    for municipio, distritos in municipios.items():
+        if zona in distritos:
+            return municipio
+    return 'Municipio desconocido'
+
 # Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
@@ -69,7 +75,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
     
     # Asignar la zona y el municipio
-    zona = list(zonas.keys())[zona_num]
+    zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
     municipio = obtener_municipio(zona)
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
