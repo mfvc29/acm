@@ -33,14 +33,15 @@ zonas = {
 municipios = {
     'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
     'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
-    'Lima Centro': ["Cercado de Lima", "Breña", "La Victoria", "San Luis"],
+    'Lima Centro': ["Cercado de Lima", "Breña", "La Victoria", "San Luis", "Rímac"],
     'Lima Norte': ["San Martín de Porres", "Los Olivos", "Independencia", "Comas", "Carabayllo", "Puente Piedra", "Ancón"],
     'Lima Sur': ["San Juan de Miraflores", "Villa María del Triunfo", "Villa El Salvador", "Chorrillos", "Lurín", 
                  "Punta Hermosa", "Punta Negra", "San Bartolo", "Pucusana"],
-    'Lima Este': ["San Juan de Lurigancho", "El Agustino", "Santa Anita", "Ate Vitarte", "Chaclacayo", "Chosica", "Cieneguilla"],
+    'Lima Este': ["San Juan de Lurigancho", "El Agustino", "Santa Anita", "Ate Vitarte", "Chaclacayo", "Chosica", "Cieneguilla", "Pachacamac"],
     'Lima Callao': ["Callao", "Bellavista", "Carmen de la Legua Reynoso", "La Perla", "La Punta", "Ventanilla", "Mi Perú"],
     'Lima Provincias': ["Barranca", "Canta", "Cañete", "Huaral", "Huarochirí", "Huaura", "Oyón", "Yauyos", "Cajatambo"]
 }
+
 
 
 # Función para obtener municipio basado en zona
