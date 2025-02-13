@@ -1,0 +1,5 @@
+libpango1.0-0
+libpangoft2-1.0-0
+libcairo2
+libjpeg-dev
+libffi-dev
