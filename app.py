@@ -45,6 +45,7 @@ municipios = {
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
 
+
 # Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
@@ -77,8 +78,19 @@ if st.button("Predecir Precio"):
     precio_venta = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     precio_cierre = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data_cierre, model_cierre)
     tipo_cambio = 3.80
+    
     st.subheader(f"📊 Resultados para la propiedad en {zona_select}")
     st.metric("Precio de Venta", f"{precio_venta:,.2f} soles")
     st.metric("💵 Precio de Venta en dólares", f"{precio_venta / tipo_cambio:,.2f} dólares")
     st.metric("Precio de Cierre", f"{precio_cierre:,.2f} soles")
     st.metric("💵 Precio de Cierre en dólares", f"{precio_cierre / tipo_cambio:,.2f} dólares")
+    
+    # Mostrar tabla de propiedades similares para Precio de Venta
+    st.subheader("🏠 Propiedades Similares (Precio de Venta)")
+    propiedades_similares_venta = data[(data['Zona_num'] == zona_num)].nlargest(5, 'Área Total')
+    st.dataframe(propiedades_similares_venta[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']])
+    
+    # Mostrar tabla de propiedades similares para Precio de Cierre
+    st.subheader("🏠 Propiedades Similares (Precio de Cierre)")
+    propiedades_similares_cierre = data_cierre[(data_cierre['Zona_num'] == zona_num)].nlargest(5, 'Área Total')
+    st.dataframe(propiedades_similares_cierre[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']])
