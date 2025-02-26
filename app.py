@@ -16,7 +16,6 @@ data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'
 data_cierre = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 
-
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
 zonas = {
@@ -48,8 +47,8 @@ municipios = {
 }
 
 
-# Función para predecir precio y propiedades similares
-def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
+# Función para predecir precio de venta
+def predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
@@ -58,6 +57,13 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
         'Zona_num': [zona_num],
     })
     prediccion_log = model.predict(entrada)
+    precio_pred = np.expm1(prediccion_log)[0]
+    return precio_pred
+
+# Función para predecir precio de cierre con el precio de venta como entrada
+def predecir_precio_cierre(precio_venta, data_cierre, model_cierre):
+    entrada = pd.DataFrame({'Precio Venta': [precio_venta]})
+    prediccion_log = model_cierre.predict(entrada)
     precio_pred = np.expm1(prediccion_log)[0]
     return precio_pred
 
@@ -80,8 +86,8 @@ zona_num = zonas[zona_select]
 if st.sidebar.button("Predecir Precio"):
     modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
     data = data_casas if tipo_propiedad == "Casa" else data_departamentos
-    precio_venta = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    precio_cierre = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data_cierre, model_cierre)
+    precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
+    precio_cierre = predecir_precio_cierre(precio_venta, data_cierre, model_cierre)
     tipo_cambio = 3.80
     
     # Resultados
