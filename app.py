@@ -8,13 +8,14 @@ import matplotlib.pyplot as plt
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
-model_cierre = joblib.load('modelo_cu.pkl')
+model_cierre_casas = joblib.load('modelo_cu_casas.pkl')
+model_cierre_departamentos = joblib.load('modelo_cu_departamentos.pkl')
 
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
-data_cierre = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
-
+data_cierre_casas = pd.read_csv('data_cu_casas.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_cierre_departamentos = pd.read_csv('data_cu_departamentos.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
@@ -61,7 +62,7 @@ def predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_
     return precio_pred
 
 # Función para predecir precio de cierre con el precio de venta como entrada
-def predecir_precio_cierre(precio_venta, data_cierre, model_cierre):
+def predecir_precio_cierre(precio_venta, model_cierre):
     entrada = pd.DataFrame({'Precio Venta': [precio_venta]})
     prediccion_log = model_cierre.predict(entrada)
     precio_pred = np.expm1(prediccion_log)[0]
@@ -84,10 +85,19 @@ zona_select = st.sidebar.selectbox("📍 Selecciona el Distrito", list(zonas.key
 zona_num = zonas[zona_select]
 
 if st.sidebar.button("Predecir Precio"):
-    modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
-    data = data_casas if tipo_propiedad == "Casa" else data_departamentos
+    if tipo_propiedad == "Casa":
+        modelo = model_casas
+        data = data_casas
+        model_cierre = model_cierre_casas
+        data_cierre = data_cierre_casas
+    else:
+        modelo = model_departamentos
+        data = data_departamentos
+        model_cierre = model_cierre_departamentos
+        data_cierre = data_cierre_departamentos
+    
     precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    precio_cierre = predecir_precio_cierre(precio_venta, data_cierre, model_cierre)
+    precio_cierre = predecir_precio_cierre(precio_venta, model_cierre)
     tipo_cambio = 3.80
     
     # Resultados
