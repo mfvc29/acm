@@ -15,6 +15,8 @@ data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_cierre = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
 
+
+
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
 zonas = {
@@ -60,37 +62,43 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     return precio_pred
 
 # Interfaz de usuario
+st.set_page_config(page_title="Predicción de Precios de Propiedades", layout="wide")
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
-st.write("Selecciona el tipo de propiedad y proporciona los datos correspondientes para obtener una estimación del precio y ver las propiedades similares.")
+st.sidebar.header("Parámetros de Entrada")
 
-tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
+# Selección de tipo de propiedad
+tipo_propiedad = st.sidebar.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
-area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
-dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
-banos = st.number_input("🚿 Número de Baños", min_value=0)
-estacionamiento = st.number_input("🚗 Número de Estacionamientos", min_value=0)
-zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
+# Inputs de usuario
+area_total = st.sidebar.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
+dormitorios = st.sidebar.number_input("🛏 Número de Dormitorios", min_value=1)
+banos = st.sidebar.number_input("🚿 Número de Baños", min_value=0)
+estacionamiento = st.sidebar.number_input("🚗 Número de Estacionamientos", min_value=0)
+zona_select = st.sidebar.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
 
-if st.button("Predecir Precio"):
+if st.sidebar.button("Predecir Precio"):
     modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
     data = data_casas if tipo_propiedad == "Casa" else data_departamentos
     precio_venta = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     precio_cierre = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data_cierre, model_cierre)
     tipo_cambio = 3.80
     
-    st.subheader(f"📊 Resultados para la propiedad en {zona_select}")
-    st.metric("Precio de Venta", f"{precio_venta:,.2f} soles")
-    st.metric("💵 Precio de Venta en dólares", f"{precio_venta / tipo_cambio:,.2f} dólares")
-    st.metric("Precio de Cierre", f"{precio_cierre:,.2f} soles")
-    st.metric("💵 Precio de Cierre en dólares", f"{precio_cierre / tipo_cambio:,.2f} dólares")
+    # Resultados
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader(f"📊 Resultados para la propiedad en {zona_select}")
+        st.metric("Precio de Venta", f"{precio_venta:,.2f} soles")
+        st.metric("💵 Precio de Venta en dólares", f"{precio_venta / tipo_cambio:,.2f} dólares")
+    with col2:
+        st.metric("Precio de Cierre", f"{precio_cierre:,.2f} soles")
+        st.metric("💵 Precio de Cierre en dólares", f"{precio_cierre / tipo_cambio:,.2f} dólares")
     
-    # Mostrar tabla de propiedades similares para Precio de Venta
+    # Tablas de propiedades similares
     st.subheader("🏠 Propiedades Similares (Precio de Venta)")
     propiedades_similares_venta = data[(data['Zona_num'] == zona_num)].nlargest(5, 'Área Total')
     st.dataframe(propiedades_similares_venta[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']])
     
-    # Mostrar tabla de propiedades similares para Precio de Cierre
     st.subheader("🏠 Propiedades Similares (Precio de Cierre)")
     propiedades_similares_cierre = data_cierre[(data_cierre['Zona_num'] == zona_num)].nlargest(5, 'Área Total')
     st.dataframe(propiedades_similares_cierre[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num']])
