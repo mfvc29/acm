@@ -61,9 +61,15 @@ def predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_
     precio_pred = np.expm1(prediccion_log)[0]
     return precio_pred
 
-# Función para predecir precio de cierre con el precio de venta como entrada
-def predecir_precio_cierre(precio_venta, model_cierre):
-    entrada = pd.DataFrame({'Precio Venta': [precio_venta]})
+# Función para predecir precio de cierre con las mismas características de entrada
+def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, model_cierre):
+    entrada = pd.DataFrame({
+        'Área Total log': [np.log1p(area_total)],
+        'Dormitorios': [dormitorios],
+        'Baños': [banos],
+        'Estacionamiento': [estacionamiento],
+        'Zona_num': [zona_num],
+    })
     prediccion_log = model_cierre.predict(entrada)
     precio_pred = np.expm1(prediccion_log)[0]
     return precio_pred
@@ -97,7 +103,7 @@ if st.sidebar.button("Predecir Precio"):
         #data_cierre = data_cierre_departamentos
     
     precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    precio_cierre = predecir_precio_cierre(precio_venta, model_cierre)
+    precio_cierre = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, model_cierre)
     tipo_cambio = 3.80
     
     # Resultados
