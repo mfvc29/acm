@@ -5,7 +5,7 @@ import joblib
 from sklearn.metrics import pairwise_distances
 import matplotlib.pyplot as plt
 
-# Cargar modelos
+# Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
 model_cierre = joblib.load('modelo_cu.pkl')
@@ -45,70 +45,25 @@ municipios = {
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
 
-
-
-
-def obtener_municipio(zona):
-    for municipio, distritos in municipios.items():
-        if zona in distritos:
-            return municipio
-    return 'Municipio desconocido'
-
+# Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
         'Baños': [banos],
         'Estacionamiento': [estacionamiento],
-        'Zona_num': [zona_num]
+        'Zona_num': [zona_num],
     })
     prediccion_log = model.predict(entrada)
-    precio_venta_pred = np.expm1(prediccion_log)[0]
-    
-    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
-    if propiedades_similares.empty:
-        return precio_venta_pred, pd.DataFrame(), None, None
-    
-    features = ['Área Total log', 'Zona_num']
-    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-    indices_similares = np.argsort(distancias[0])[:10]
-    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
-    
-    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
-    propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
-    
-    zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
-    municipio = obtener_municipio(zona)
-    return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
+    precio_pred = np.expm1(prediccion_log)[0]
+    return precio_pred
 
-def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta, data):
-    entrada = pd.DataFrame({
-        'Área Total log': [np.log1p(area_total)],
-        'Dormitorios': [dormitorios],
-        'Baños': [banos],
-        'Estacionamiento': [estacionamiento],
-        'Zona_num': [zona_num],
-        'Precio Venta log': [np.log1p(precio_venta)]
-    })
-    prediccion_log = model_cierre.predict(entrada)
-    precio_cierre_pred = np.expm1(prediccion_log)[0]
-    
-    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
-    features = ['Área Total log', 'Precio Venta log']
-    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-    indices_similares = np.argsort(distancias[0])[:10]
-    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
-    
-    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
-    propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre']]
-    
-    return precio_cierre_pred, propiedades_similares_mostradas
-
-# Interfaz
+# Interfaz de usuario
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
+st.write("Selecciona el tipo de propiedad y proporciona los datos correspondientes para obtener una estimación del precio y ver las propiedades similares.")
+
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
+
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
 banos = st.number_input("🚿 Número de Baños", min_value=0)
@@ -119,16 +74,11 @@ zona_num = zonas[zona_select]
 if st.button("Predecir Precio"):
     modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
     data = data_casas if tipo_propiedad == "Casa" else data_departamentos
-    precio_venta, propiedades_similares, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    precio_cierre, propiedades_similares_cierre = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta, data_cierre)
+    precio_venta = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
+    precio_cierre = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data_cierre, model_cierre)
     tipo_cambio = 3.80
-    precio_venta_dolares = precio_venta / tipo_cambio
-    precio_cierre_dolares = precio_cierre / tipo_cambio
-    
-    st.metric("Precio Venta", f"{precio_venta:,.2f} soles", f"{precio_venta_dolares:,.2f} dólares")
-    st.metric("Precio Cierre", f"{precio_cierre:,.2f} soles", f"{precio_cierre_dolares:,.2f} dólares")
-    
-    st.subheader("🏘 Propiedades Similares - Precio de Venta")
-    st.write(propiedades_similares)
-    st.subheader("🏘 Propiedades Similares - Precio de Cierre")
-    st.write(propiedades_similares_cierre)
+    st.subheader(f"📊 Resultados para la propiedad en {zona_select}")
+    st.metric("Precio de Venta", f"{precio_venta:,.2f} soles")
+    st.metric("💵 Precio de Venta en dólares", f"{precio_venta / tipo_cambio:,.2f} dólares")
+    st.metric("Precio de Cierre", f"{precio_cierre:,.2f} soles")
+    st.metric("💵 Precio de Cierre en dólares", f"{precio_cierre / tipo_cambio:,.2f} dólares")
