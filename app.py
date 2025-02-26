@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
-model_cierre_casas = joblib.load('modelo_cu_casas.pkl')
+model_cierre_casas = joblib.load('modelo_cu.pkl')
 model_cierre_departamentos = joblib.load('modelo_cu_departamentos.pkl')
 
 # Cargar datasets
