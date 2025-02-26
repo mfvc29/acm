@@ -67,11 +67,12 @@ def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona
         'Baños': [banos],
         'Estacionamiento': [estacionamiento],
         'Zona_num': [zona_num],
-        'Precio Venta': [precio_venta],
+        'Precio Venta log': [np.log1p(precio_venta)],  # Cambio aquí
     })
     prediccion_log = model_cierre.predict(entrada)
     precio_pred = np.expm1(prediccion_log)[0]
     return precio_pred
+ 
 
 # Interfaz de usuario
 st.set_page_config(page_title="Predicción de Precios de Propiedades", layout="wide")
