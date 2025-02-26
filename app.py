@@ -14,7 +14,7 @@ model_cierre_casas = joblib.load('modelo_cu.pkl')
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
-data_cierre_casas = pd.read_csv('data_cu_casas.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_cierre_casas = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
 #data_cierre_departamentos = pd.read_csv('data_cu_departamentos.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
