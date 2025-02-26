@@ -132,7 +132,6 @@ if st.button("Predecir Precio"):
         area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     
     precio_cierre_estimado = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_estimado, data_cu)
-    st.metric("📉 Precio de Cierre Estimado", f"{precio_cierre_estimado:,.2f} soles")
     
     tipo_cambio = 3.80
     precio_estimado_dolares = precio_estimado / tipo_cambio
@@ -142,16 +141,10 @@ if st.button("Predecir Precio"):
     st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
     
     if not propiedades_similares.empty:
-        precio_min = propiedades_similares['Precio Venta'].min()
-        precio_max = propiedades_similares['Precio Venta'].max()
-        st.metric("Precio Mínimo", f"{precio_min:,.2f} soles")
-        st.metric("Precio Máximo", f"{precio_max:,.2f} soles")
-        
-        fig, ax = plt.subplots()
-        ax.barh(['Mínimo', 'Estimado', 'Máximo'], [precio_min, precio_estimado, precio_max], color=['blue', 'orange', 'green'])
-        st.pyplot(fig)
-        
         st.subheader("🏘 Propiedades Similares")
         st.write(propiedades_similares)
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
+    
+    st.subheader("🏘 Propiedades Similares (SIGI)")
+    st.metric("📉 Precio de Cierre Estimado", f"{precio_cierre_estimado:,.2f} soles")
