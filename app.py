@@ -1,4 +1,3 @@
- 
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -9,12 +8,10 @@ import matplotlib.pyplot as plt
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
-model_cu = joblib.load('modelo_cu.pkl')  # Nuevo modelo agregado
 
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
-data_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')  # Nuevo dataset agregado
 
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
@@ -32,6 +29,29 @@ zonas = {
     "Barranca": 50, "Canta": 51, "Cañete": 52, "Huaral": 53, "Huarochirí": 54, "Huaura": 55,
     "Oyón": 56, "Yauyos": 57, "Cajatambo": 58
 }
+ 
+
+# Diccionario de municipios con la nueva categorización
+municipios = {
+    'Lima Norte': ['Ancón', 'Carabayllo', 'Comas', 'Independencia', 'Los Olivos', 'Puente Piedra', 'San Martín de Porres'],
+    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'Cieneguilla', 'El Agustino', 'San Juan de Lurigancho', 'San Juan de Miraflores', 'San Luis', 'Santa Anita'],
+    'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
+    'Lima Centro': ['Breña', 'Cercado de Lima', 'La Victoria', 'Rímac'],
+    'Lima Moderna': ['Jesús María', 'Lince', 'Magdalena del Mar', 'Pueblo Libre', 'San Miguel', 'Surquillo'],
+    'Lima Sur': ['Chorrillos', 'Lurín', 'Pachacamac', 'Pucusana', 'Punta Hermosa', 'Punta Negra', 'San Bartolo', 'Santa María del Mar', 'Villa El Salvador', 'Villa María del Triunfo'],
+    'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
+    'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
+}
+
+
+
+
+# Función para obtener municipio basado en zona
+def obtener_municipio(zona):
+    for municipio, distritos in municipios.items():
+        if zona in distritos:
+            return municipio
+    return 'Municipio desconocido'
 
 # Función para predecir precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
@@ -62,32 +82,27 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta','Enlaces']]
+    
+    # Asignar la zona y el municipio
+    zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
+    municipio = obtener_municipio(zona)
+    return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
-    return precio_venta_pred, propiedades_similares_mostradas
-
-# Nueva función para predecir precio de cierre
-def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta_pred, data):
-    entrada = pd.DataFrame({
-        'Área Total log': [np.log1p(area_total)],
-        'Dormitorios': [dormitorios],
-        'Baños': [banos],
-        'Estacionamiento': [estacionamiento],
-        'Zona_num': [zona_num],
-        'Precio Venta log': [np.log1p(precio_venta_pred)]
-    })
-
-    prediccion_log = model_cu.predict(entrada)
-    precio_cierre_pred = np.expm1(prediccion_log)[0]
-
-    return precio_cierre_pred
+# Función para obtener municipio basado en zona
+def obtener_municipio(zona):
+    for municipio, distritos in municipios.items():
+        if zona in distritos:
+            return municipio
+    return 'Municipio desconocido'
 
 # Interfaz de usuario
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
+st.write("Selecciona el tipo de propiedad y proporciona los datos correspondientes para obtener una estimación del precio y ver las propiedades similares.")
 
-# Selección del tipo de propiedad
+# Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
-# Entrada del usuario
+# Formulario de entrada
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
 banos = st.number_input("🚿 Número de Baños", min_value=0)
@@ -104,12 +119,55 @@ if st.button("Predecir Precio"):
         modelo = model_departamentos
         data = data_departamentos
     
-    precio_estimado, propiedades_similares = predecir_precio_y_similares(
+    precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
         area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    
-    # Predicción de precio de cierre solo para casas
-    if tipo_propiedad == "Casa":
-        precio_cierre_estimado = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_estimado, data_cu)
-        st.metric("📉 Precio de Cierre Estimado", f"{precio_cierre_estimado:,.2f} soles")
-    
+
+    propiedades_similares['Área Total'] = propiedades_similares['Área Total'].round(2)
+    propiedades_similares['Estacionamiento'] = propiedades_similares['Estacionamiento'].astype(int)
+    propiedades_similares['Dormitorios'] = propiedades_similares['Dormitorios'].astype(int)
+    propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
+ 
+    # Mostrar los resultados
+    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
+
+    # Convertir el precio estimado a dólares
+    precio_estimado_dolares = precio_estimado / tipo_cambio
+        
+    # Mostrar resultados
+    st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
     st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
+    st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
+    st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
+
+
+    if not propiedades_similares.empty:
+        # Calcular valores clave
+        precio_min = propiedades_similares['Precio Venta'].min()
+        precio_max = propiedades_similares['Precio Venta'].max()
+        diferencia_min = precio_estimado - precio_min
+        diferencia_max = precio_max - precio_estimado
+
+        # Indicadores adicionales
+        st.metric("Precio Mínimo", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
+        st.metric("Precio Máximo", f"{precio_max:,.2f} soles", f"Diferencia: {diferencia_max:,.2f}")
+
+        # Gráfico de barras
+        st.subheader("📈 Comparación de Precios")
+        fig, ax = plt.subplots(figsize=(8, 4))
+        labels = ['Precio Mínimo', 'Precio Estimado', 'Precio Máximo']
+        valores = [precio_min, precio_estimado, precio_max]
+        colores = ['#1f77b4', '#ff7f0e', '#2ca02c']
+
+        ax.barh(labels, valores, color=colores, alpha=0.8, edgecolor='black')
+        for i, valor in enumerate(valores):
+            ax.text(valor, i, f"{valor:,.2f} soles", va='center', ha='left', fontsize=10)
+        ax.set_xlabel("Precio en soles")
+        ax.set_title("Comparación de Precios")
+        st.pyplot(fig)
+
+        # Tabla de propiedades similares
+        st.subheader("🏘 Propiedades Similares")
+        propiedades_similares = propiedades_similares.reset_index(drop=True)    
+        st.write(propiedades_similares)
+    else:
+        st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
