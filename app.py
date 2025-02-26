@@ -46,8 +46,6 @@ municipios = {
     'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
-
-
 # Función para predecir precio de venta
 def predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
     entrada = pd.DataFrame({
@@ -61,14 +59,15 @@ def predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_
     precio_pred = np.expm1(prediccion_log)[0]
     return precio_pred
 
-# Función para predecir precio de cierre con las mismas características de entrada
-def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, model_cierre):
+# Función para predecir precio de cierre con el precio de venta como nueva variable de entrada
+def predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta, model_cierre):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
         'Baños': [banos],
         'Estacionamiento': [estacionamiento],
         'Zona_num': [zona_num],
+        'Precio Venta': [precio_venta],
     })
     prediccion_log = model_cierre.predict(entrada)
     precio_pred = np.expm1(prediccion_log)[0]
@@ -99,11 +98,11 @@ if st.sidebar.button("Predecir Precio"):
     else:
         modelo = model_departamentos
         data = data_departamentos
-        #model_cierre = model_cierre_departamentos
-        #data_cierre = data_cierre_departamentos
+        model_cierre = model_cierre_departamentos
+        data_cierre = data_cierre_departamentos
     
     precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
-    precio_cierre = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, model_cierre)
+    precio_cierre = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta, model_cierre)
     tipo_cambio = 3.80
     
     # Resultados
