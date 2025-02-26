@@ -25,22 +25,24 @@ zonas = {
     "San Juan de Miraflores": 33, "San Luis": 34, "San Martín de Porres": 35, "San Miguel": 36,
     "Santa Anita": 37, "Santa María del Mar": 38, "Santiago de Surco": 39, "Surquillo": 40,
     "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43, "Bellavista": 44,
-    "Carmen de la Legua Reynoso": 45, "La Perla": 46, "La Punta": 47, "Ventanilla": 48, "Mi Perú": 49
+    "Carmen de la Legua Reynoso": 45, "La Perla": 46, "La Punta": 47, "Ventanilla": 48, "Mi Perú": 49,
+    "Barranca": 50, "Canta": 51, "Cañete": 52, "Huaral": 53, "Huarochirí": 54, "Huaura": 55,
+    "Oyón": 56, "Yauyos": 57, "Cajatambo": 58
 }
-
+ 
 
 # Diccionario de municipios con la nueva categorización
 municipios = {
+    'Lima Norte': ['Ancón', 'Carabayllo', 'Comas', 'Independencia', 'Los Olivos', 'Puente Piedra', 'San Martín de Porres'],
+    'Lima Este': ['Ate Vitarte', 'Chaclacayo', 'Chosica', 'Cieneguilla', 'El Agustino', 'San Juan de Lurigancho', 'San Juan de Miraflores', 'San Luis', 'Santa Anita'],
     'Lima Top': ['Barranco', 'San Borja', 'Santiago de Surco', 'Miraflores', 'San Isidro', 'La Molina'],
-    'Lima Moderna': ['Jesús María', 'Pueblo Libre', 'Lince', 'San Miguel', 'Magdalena del Mar', 'Surquillo'],
-    'Lima Centro': ["Cercado de Lima", "Breña", "La Victoria", "San Luis", "Rímac"],
-    'Lima Norte': ["San Martín de Porres", "Los Olivos", "Independencia", "Comas", "Carabayllo", "Puente Piedra", "Ancón"],
-    'Lima Sur': ["San Juan de Miraflores", "Villa María del Triunfo", "Villa El Salvador", "Chorrillos", "Lurín", 
-                 "Punta Hermosa", "Punta Negra", "San Bartolo", "Pucusana"],
-    'Lima Este': ["San Juan de Lurigancho", "El Agustino", "Santa Anita", "Ate Vitarte", "Chaclacayo", "Chosica", "Cieneguilla", "Pachacamac"],
-    'Lima Callao': ["Callao", "Bellavista", "Carmen de la Legua Reynoso", "La Perla", "La Punta", "Ventanilla", "Mi Perú"],
-    'Lima Provincias': ["Barranca", "Canta", "Cañete", "Huaral", "Huarochirí", "Huaura", "Oyón", "Yauyos", "Cajatambo"]
+    'Lima Centro': ['Breña', 'Cercado de Lima', 'La Victoria', 'Rímac'],
+    'Lima Moderna': ['Jesús María', 'Lince', 'Magdalena del Mar', 'Pueblo Libre', 'San Miguel', 'Surquillo'],
+    'Lima Sur': ['Chorrillos', 'Lurín', 'Pachacamac', 'Pucusana', 'Punta Hermosa', 'Punta Negra', 'San Bartolo', 'Santa María del Mar', 'Villa El Salvador', 'Villa María del Triunfo'],
+    'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
+    'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
+
 
 
 
@@ -79,7 +81,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     # Revertir logaritmos
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta']]
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta','Enlaces']]
     
     # Asignar la zona y el municipio
     zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
