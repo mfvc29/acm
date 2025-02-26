@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
 model_cierre_casas = joblib.load('modelo_cu.pkl')
-model_cierre_departamentos = joblib.load('modelo_cu_departamentos.pkl')
+#model_cierre_departamentos = joblib.load('modelo_cu_departamentos.pkl')
 
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_cierre_casas = pd.read_csv('data_cu_casas.csv').drop(columns=['Municipio_num'], errors='ignore')
-data_cierre_departamentos = pd.read_csv('data_cu_departamentos.csv').drop(columns=['Municipio_num'], errors='ignore')
+#data_cierre_departamentos = pd.read_csv('data_cu_departamentos.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
@@ -93,8 +93,8 @@ if st.sidebar.button("Predecir Precio"):
     else:
         modelo = model_departamentos
         data = data_departamentos
-        model_cierre = model_cierre_departamentos
-        data_cierre = data_cierre_departamentos
+        #model_cierre = model_cierre_departamentos
+        #data_cierre = data_cierre_departamentos
     
     precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     precio_cierre = predecir_precio_cierre(precio_venta, model_cierre)
