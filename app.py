@@ -98,8 +98,8 @@ if st.sidebar.button("Predecir Precio"):
     else:
         modelo = model_departamentos
         data = data_departamentos
-        model_cierre = model_cierre_departamentos
-        data_cierre = data_cierre_departamentos
+       # model_cierre = model_cierre_departamentos
+        #data_cierre = data_cierre_departamentos
     
     precio_venta = predecir_precio_venta(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     precio_cierre = predecir_precio_cierre(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta, model_cierre)
