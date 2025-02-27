@@ -216,7 +216,7 @@ if st.button("Predecir Precio"):
     propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
 
     # Eliminar las columnas logarítmicas para claridad
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Cierre', 'Codigo']]
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre', 'Codigo']]
 
     # Obtener la zona y municipio
     zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
