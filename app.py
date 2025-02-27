@@ -176,11 +176,7 @@ if st.button("Predecir Precio"):
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
         
 
-    # Usar el precio estimado como valor predeterminado en el campo de precio venta
-    if 'precio_estimado' in st.session_state:
-        precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f", value=st.session_state.precio_estimado)
-    else:
-        precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f")
+    precio_venta = precio_estimado
     
     # Asegurarse de usar el modelo adecuado
     if tipo_propiedad == "Casa":
