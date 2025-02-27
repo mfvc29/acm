@@ -8,10 +8,14 @@ import matplotlib.pyplot as plt
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
+model_sigi_cu = joblib.load('modelo_cu.pkl')
+model_sigi_du = joblib.load('modelo_du.pkl')
 
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_sigi_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_sigi_du = pd.read_csv('data_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
 # Mapa de zonas con números actualizados
@@ -42,7 +46,6 @@ municipios = {
     'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
-
 
 
 
@@ -171,3 +174,61 @@ if st.button("Predecir Precio"):
         st.write(propiedades_similares)
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
+        
+# Botón para predecir el precio de cierre
+if st.button("Predecir Precio de Cierre"):
+    precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f")
+
+    # Asegurarse de usar el modelo adecuado
+    if tipo_propiedad == "Casa":
+        modelo = model_sigi_cu
+        data = data_sigi_cu
+    else:
+        modelo = model_sigi_du
+        data = data_sigi_du
+
+    # Crear el DataFrame para la predicción de precio de cierre
+    entrada = pd.DataFrame({
+        'Área Total log': [np.log1p(area_total)],
+        'Dormitorios': [dormitorios],
+        'Baños': [banos],
+        'Estacionamiento': [estacionamiento],
+        'Zona_num': [zona_num],
+        'Precio Venta log': [np.log1p(precio_venta)]  # Precio venta log
+    })
+
+    # Predicción del precio de cierre en logaritmo
+    prediccion_log = modelo.predict(entrada)
+    precio_cierre_pred = np.expm1(prediccion_log)[0]
+
+    # Filtrar propiedades de la misma zona
+    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+
+    # Calcular la distancia euclidiana entre la entrada y el dataset
+    features = ['Área Total log', 'Precio Venta log']
+    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
+    indices_similares = np.argsort(distancias[0])[:10]  # Tomar las 10 más cercanas
+
+    # Seleccionar propiedades similares
+    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+
+    # Revertir logaritmo para mostrar los valores originales
+    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
+    propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
+
+    # Eliminar las columnas logarítmicas para claridad
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Cierre', 'Codigo']]
+
+    # Obtener la zona y municipio
+    zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
+    zona, municipio = zonas_municipios[zona_num]
+
+    # Mostrar resultados
+    st.subheader(f"📊 Resultados para el precio de cierre en {zona}, {municipio}")
+    st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
+
+    # Mostrar propiedades similares
+    if not propiedades_similares_mostradas.empty:
+        st.write(propiedades_similares_mostradas)
+    else:
+        st.warning("⚠️ No se encontraron propiedades similares para el precio de cierre.")
