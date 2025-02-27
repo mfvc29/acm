@@ -18,8 +18,7 @@ data_sigi_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors
 data_sigi_du = pd.read_csv('data_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
-zonas = {
-    "Ancón": 1, "Ate Vitarte": 2, "Barranco": 3, "Breña": 4, "Carabayllo": 5, "Cercado de Lima": 6,
+zonas = {"Ancón": 1, "Ate Vitarte": 2, "Barranco": 3, "Breña": 4, "Carabayllo": 5, "Cercado de Lima": 6,
     "Chaclacayo": 7, "Chorrillos": 8, "Chosica": 9, "Cieneguilla": 10, "Comas": 11, "El Agustino": 12,
     "Independencia": 13, "Jesús María": 14, "La Molina": 15, "La Victoria": 16, "Lince": 17,
     "Los Olivos": 18, "Lurín": 19, "Magdalena del Mar": 20, "Miraflores": 21, "Pachacamac": 22,
@@ -28,8 +27,7 @@ zonas = {
     "San Juan de Miraflores": 33, "San Luis": 34, "San Martín de Porres": 35, "San Miguel": 36,
     "Santa Anita": 37, "Santa María del Mar": 38, "Santiago de Surco": 39, "Surquillo": 40,
     "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43, "Bellavista": 44,
-    "Carmen de la Legua Reynoso": 45, "La Perla": 46, "La Punta": 47, "Ventanilla": 48, "Mi Perú": 49
-}
+    "Carmen de la Legua Reynoso": 45, "La Perla": 46, "La Punta": 47, "Ventanilla": 48, "Mi Perú": 49}
 
 # Diccionario de municipios
 municipios = {
@@ -48,7 +46,7 @@ def obtener_municipio(zona):
             return municipio
     return 'Municipio desconocido'
 
-def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
+def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model, data_sigi, model_sigi):
     entrada = pd.DataFrame({
         'Área Total log': [np.log1p(area_total)],
         'Dormitorios': [dormitorios],
@@ -56,17 +54,28 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
         'Estacionamiento': [estacionamiento],
         'Zona_num': [zona_num],
     })
+    
     prediccion_log = model.predict(entrada)
     precio_venta_pred = np.expm1(prediccion_log)[0]
     zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
     municipio = obtener_municipio(zona)
     
-    modelo_sigi = model_sigi_cu if tipo_propiedad == "Casa" else model_sigi_du
     entrada['Precio Venta log'] = np.log1p(precio_venta_pred)
-    prediccion_log_sigi = modelo_sigi.predict(entrada)
+    prediccion_log_sigi = model_sigi.predict(entrada)
     precio_cierre_pred_sigi = np.expm1(prediccion_log_sigi)[0]
     
-    return precio_venta_pred, zona, municipio, precio_cierre_pred_sigi
+    # Propiedades similares en dataset predicho
+    features = ['Área Total log', 'Zona_num']
+    distancias = pairwise_distances(entrada[features], data[features])
+    indices_similares = np.argsort(distancias[0])[:10]
+    propiedades_similares_mostradas = data.iloc[indices_similares][['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta', 'Enlaces']]
+    
+    # Propiedades similares en SIGI
+    distancias_sigi = pairwise_distances(entrada[features], data_sigi[features])
+    indices_similares_sigi = np.argsort(distancias_sigi[0])[:10]
+    propiedades_similares_sigi = data_sigi.iloc[indices_similares_sigi][['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Cierre', 'Codigo']]
+    
+    return precio_venta_pred, zona, municipio, precio_cierre_pred_sigi, propiedades_similares_mostradas, propiedades_similares_sigi
 
 # Streamlit UI
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
@@ -80,7 +89,11 @@ zona_num = st.number_input("📍 Zona (Código)", min_value=1)
 if st.button("Predecir Precio"):
     modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
     data = data_casas if tipo_propiedad == "Casa" else data_departamentos
-    precio_estimado, zona, municipio, precio_cierre_estimado_sigi = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
+    data_sigi = data_sigi_cu if tipo_propiedad == "Casa" else data_sigi_du
+    model_sigi = model_sigi_cu if tipo_propiedad == "Casa" else model_sigi_du
+    precio_estimado, zona, municipio, precio_cierre_estimado_sigi, propiedades_pred, propiedades_sigi = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo, data_sigi, model_sigi)
     st.metric("💰 Precio Estimado", f"{precio_estimado:,.2f} soles")
     st.write(f"📍 Zona: {zona}, Municipio: {municipio}")
     st.metric("📉 Precio de Cierre Estimado SIGI", f"{precio_cierre_estimado_sigi:,.2f} soles")
+    st.write("🏠 Propiedades similares (Predicho):", propiedades_pred)
+    st.write("📊 Propiedades similares (SIGI):", propiedades_sigi)
