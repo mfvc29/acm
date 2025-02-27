@@ -177,8 +177,12 @@ if st.button("Predecir Precio"):
         
 # Botón para predecir el precio de cierre
 if st.button("Predecir Precio de Cierre"):
-    precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f")
-
+    # Usar el precio estimado como valor predeterminado en el campo de precio venta
+    if 'precio_estimado' in st.session_state:
+        precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f", value=st.session_state.precio_estimado)
+    else:
+        precio_venta = st.number_input("💲 Precio Venta (S/)", min_value=0.0, format="%.2f")
+    
     # Asegurarse de usar el modelo adecuado
     if tipo_propiedad == "Casa":
         modelo = model_sigi_cu
@@ -232,3 +236,6 @@ if st.button("Predecir Precio de Cierre"):
         st.write(propiedades_similares_mostradas)
     else:
         st.warning("⚠️ No se encontraron propiedades similares para el precio de cierre.")
+    
+    # Actualizar el valor del precio estimado para el siguiente ciclo
+    st.session_state.precio_estimado = precio_venta
