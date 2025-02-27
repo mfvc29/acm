@@ -60,22 +60,13 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     precio_venta_pred = np.expm1(prediccion_log)[0]
     zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
     municipio = obtener_municipio(zona)
-    return precio_venta_pred, zona, municipio
-
-def predecir_precio_sigi(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta_pred, tipo_propiedad):
+    
     modelo_sigi = model_sigi_cu if tipo_propiedad == "Casa" else model_sigi_du
-    data_sigi = data_sigi_cu if tipo_propiedad == "Casa" else data_sigi_du
-    entrada = pd.DataFrame({
-        'Área Total log': [np.log1p(area_total)],
-        'Dormitorios': [dormitorios],
-        'Baños': [banos],    
-        'Estacionamiento': [estacionamiento],
-        'Zona_num': [zona_num],
-        'Precio Venta log': [np.log1p(precio_venta_pred)]
-    })
+    entrada['Precio Venta log'] = np.log1p(precio_venta_pred)
     prediccion_log_sigi = modelo_sigi.predict(entrada)
     precio_cierre_pred_sigi = np.expm1(prediccion_log_sigi)[0]
-    return precio_cierre_pred_sigi
+    
+    return precio_venta_pred, zona, municipio, precio_cierre_pred_sigi
 
 # Streamlit UI
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
@@ -89,11 +80,7 @@ zona_num = st.number_input("📍 Zona (Código)", min_value=1)
 if st.button("Predecir Precio"):
     modelo = model_casas if tipo_propiedad == "Casa" else model_departamentos
     data = data_casas if tipo_propiedad == "Casa" else data_departamentos
-    precio_estimado, zona, municipio = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
+    precio_estimado, zona, municipio, precio_cierre_estimado_sigi = predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
     st.metric("💰 Precio Estimado", f"{precio_estimado:,.2f} soles")
     st.write(f"📍 Zona: {zona}, Municipio: {municipio}")
-    if st.button("🔍 Buscar en SIGI"):
-        precio_cierre_estimado_sigi = predecir_precio_sigi(area_total, dormitorios, banos, estacionamiento, zona_num, precio_estimado, tipo_propiedad)
-        st.metric("📉 Precio de Cierre Estimado SIGI", f"{precio_cierre_estimado_sigi:,.2f} soles")
-        st.write("📊 Comparación de Precios")
-        
+    st.metric("📉 Precio de Cierre Estimado SIGI", f"{precio_cierre_estimado_sigi:,.2f} soles")
