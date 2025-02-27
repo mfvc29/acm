@@ -225,7 +225,6 @@ if st.button("Predecir Precio"):
     precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
     # Mostrar resultados
-    st.subheader(f"📊 Resultados para el precio de cierre en {zona}, {municipio}")
     st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
     st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
