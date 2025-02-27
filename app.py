@@ -48,6 +48,53 @@ municipios = {
 }
 
 
+
+# Función para obtener municipio basado en zona
+def obtener_municipio(zona):
+    for municipio, distritos in municipios.items():
+        if zona in distritos:
+            return municipio
+    return 'Municipio desconocido'
+
+
+# Función para predecir precio y propiedades similares
+def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model):
+    entrada = pd.DataFrame({
+        'Área Total log': [np.log1p(area_total)],
+        'Dormitorios': [dormitorios],
+        'Baños': [banos],
+        'Estacionamiento': [estacionamiento],
+        'Zona_num': [zona_num],
+    })
+
+    # Predicción del precio en logaritmo
+    prediccion_log = model.predict(entrada)
+    precio_venta_pred = np.expm1(prediccion_log)[0]
+
+    # Filtrar propiedades similares por zona
+    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+    if propiedades_similares.empty:
+        return precio_venta_pred, pd.DataFrame(), None, None
+
+    # Distancias
+    features = ['Área Total log', 'Zona_num']
+    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
+    indices_similares = np.argsort(distancias[0])[:10]
+    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+
+    # Revertir logaritmos
+    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
+    propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta','Enlaces']]
+    
+    # Asignar la zona y el municipio
+    zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
+    municipio = obtener_municipio(zona)
+    return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
+
+
+
+
 # Función para predecir precio de cierre y buscar propiedades similares en SIGI
 def predecir_precio_sigi(area_total, dormitorios, banos, estacionamiento, zona_num, precio_venta_pred, tipo_propiedad):
     modelo = model_cu if tipo_propiedad == "Casa" else model_du
@@ -78,6 +125,7 @@ def predecir_precio_sigi(area_total, dormitorios, banos, estacionamiento, zona_n
     
     return precio_cierre_pred, propiedades_similares_mostradas
 
+
 # Streamlit UI
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
@@ -98,3 +146,4 @@ if st.button("Predecir Precio"):
         precio_cierre_estimado, propiedades_similares_sigi = predecir_precio_sigi(area_total, dormitorios, banos, estacionamiento, zona_num, precio_estimado, tipo_propiedad)
         st.metric("📉 Precio de Cierre Estimado", f"{precio_cierre_estimado:,.2f} soles")
         st.write(propiedades_similares_sigi)
+ 
