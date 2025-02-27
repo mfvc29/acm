@@ -52,6 +52,7 @@ def obtener_municipio(zona):
             return municipio
     return 'Municipio desconocido'
 
+# Función para la predicción de precio y propiedades similares
 def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento, zona_num, data, model, data_cierre, model_cierre):
     # Paso 1: Crear el dataframe de entrada
     entrada = pd.DataFrame({
@@ -105,8 +106,6 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Retornar los resultados de la predicción y las propiedades similares
     return precio_venta_pred, precio_cierre_pred, propiedades_similares_venta[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta', 'Enlaces']], propiedades_similares_cierre[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Zona_num', 'Precio Cierre', 'Codigo']], zona, municipio
-
-
 
 # Interfaz de usuario
 st.title("🏡 Predicción de Precios de Propiedades en Lima")
