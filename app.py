@@ -131,7 +131,7 @@ if st.button("Predecir Precio"):
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
  
     # Mostrar los resultados
-    tipo_cambio = 3.80  # Tipo de cambio de soles a dólares
+    tipo_cambio = 3.71  # Tipo de cambio de soles a dólares
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
@@ -221,10 +221,14 @@ if st.button("Predecir Precio"):
     # Obtener la zona y municipio
     zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
     zona, municipio = zonas_municipios[zona_num]
+    
+    precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
     # Mostrar resultados
     st.subheader(f"📊 Resultados para el precio de cierre en {zona}, {municipio}")
     st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
+    st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
+    st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
 
     # Mostrar propiedades similares
     if not propiedades_similares_mostradas.empty:
