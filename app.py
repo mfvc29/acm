@@ -159,21 +159,36 @@ if st.button("Predecir Precio"):
         st.subheader("📈 Comparación de Precios")
 
         # Crear el gráfico de dispersión con distribución
+        # Obtener los límites naturales de la distribución
+        xmin = propiedades_similares['Precio Venta'].min()
+        xmax = propiedades_similares['Precio Venta'].max()
+
+        # Ajustar los límites para incluir el precio estimado si está fuera del rango
+        xmin = min(xmin, precio_estimado)
+        xmax = max(xmax, precio_estimado)
+
+        # Crear el gráfico
         fig, ax = plt.subplots(figsize=(8, 5))
-        sns.kdeplot(propiedades_similares['Precio Venta'], fill=True, color='#F2F0EF', alpha=0.5, label='Distribución de Precios')
+        sns.kdeplot(propiedades_similares['Precio Venta'], fill=True, color='#C9C5B1', alpha=0.5, label='Distribución de Precios')
+
+        # Líneas verticales
         ax.axvline(precio_estimado, color='red', linestyle='--', linewidth=2, label='Precio Estimado')
         ax.axvline(precio_min, color='#4682B4', linestyle=':', linewidth=2, label='Precio Más Bajo en la Zona')
         ax.axvline(precio_max, color='#D0006C', linestyle=':', linewidth=2, label='Precio Más Alto en la Zona')
 
-        # Etiquetas y título
+        # Aplicar los nuevos límites
+        ax.set_xlim(xmin, xmax)
+
+        # Eliminar los números del eje Y
+        ax.set_yticks([])
+
+        # Etiquetas y leyenda
         ax.set_xlabel("Precio en Soles")
         ax.set_ylabel("Densidad")
-        #ax.set_title("📊 Comparación de Precios en la Zona")
         ax.legend()
 
-        
-        
         st.pyplot(fig)
+
 
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
