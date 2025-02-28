@@ -160,13 +160,16 @@ if st.button("Predecir Precio"):
 
         # Crear el gráfico de dispersión
         fig, ax = plt.subplots(figsize=(8, 5))
+
+        # Puntos de propiedades similares
         sns.scatterplot(data=propiedades_similares, x='Área Total', y='Precio Venta', color='#4682B4', alpha=0.6, label="Propiedades Similares")
+
+        # Etiquetar cada punto con su precio
+        for i, row in propiedades_similares.iterrows():
+            ax.text(row['Área Total'], row['Precio Venta'], f"S/{row['Precio Venta']:.0f}", fontsize=9, ha='right')
 
         # Marcar el precio estimado
         ax.scatter(area_total, precio_estimado, color='red', s=100, label="Precio Estimado", edgecolors='black', marker='X')
-
-        # Agregar línea de tendencia
-        sns.regplot(data=propiedades_similares, x='Área Total', y='Precio Venta', scatter=False, color='gray', line_kws={"linestyle": "--"})
 
         # Etiquetas y título
         ax.set_xlabel("Área Total (m²)")
