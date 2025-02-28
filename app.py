@@ -188,11 +188,12 @@ if st.button("Predecir Precio"):
         # Agregar etiquetas con los valores en cada barra
         for barra, precio in zip(barras, precios):
             ax.text(barra.get_x() + barra.get_width()/2, barra.get_height(), f"S/ {precio:,.0f}", 
-                    ha='center', va='bottom', fontsize=3, fontweight='bold')
+                    ha='center', va='bottom', fontsize=5, fontweight='bold')
 
         # Ajustes estéticos
         ax.set_yticks([])  # Quitar eje Y
         ax.set_frame_on(False)  # Quitar borde del gráfico
+        ax.set_xticklabels(categorias, fontsize=4)
         #ax.set_title("Comparación de Precios")
         ax.set_ylim(0, max(precios) * 1.1)  # Espacio extra en la parte superior
 
