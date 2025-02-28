@@ -105,15 +105,12 @@ st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wid
 #st.image("Fondo.jpeg", width=150)  # Ajusta el ancho según lo necesites
 
 # Título
-st.markdown(
-    """
-    <div style="display: flex; align-items: center;">
-        <img src="Fondo.jpeg" width="80">
-        <h1 style="margin-left: 15px;">🏡 Análisis Comparativo de Mercado (ACM)</h1>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("Fondo.jpeg", width=80)
+with col2:
+    st.title("🏡 Análisis Comparativo de Mercado (ACM)")
+
 
 # Descripción
 st.write(
