@@ -100,8 +100,19 @@ def obtener_municipio(zona):
     return 'Municipio desconocido'
 
 # Interfaz de usuario
-st.title("🏡 Predicción de Precios de Propiedades en Lima")
-st.write("Selecciona el tipo de propiedad y proporciona los datos correspondientes para obtener una estimación del precio y ver las propiedades similares.")
+st.set_page_config(page_title="ACM - Predicción de Precios en Lima", page_icon="🏡", layout="wide")
+# Mostrar el logo
+st.image("Fondo.jpeg", width=150)  # Ajusta el ancho según lo necesites
+
+# Título
+st.title("🏡 Análisis Comparativo de Mercado (ACM)")
+
+# Descripción
+st.write(
+    "Ingresa los datos de la propiedad y selecciona el tipo de inmueble para obtener "
+    "una estimación precisa del precio de mercado. También podrás ver propiedades similares "
+    "y comparar su relación con el valor estimado, lo que te ayudará a tomar decisiones más informadas."
+)
 
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
