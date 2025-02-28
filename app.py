@@ -158,33 +158,28 @@ if st.button("Predecir Precio"):
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
 
-        # Crear el gráfico de dispersión
-        fig, ax = plt.subplots(figsize=(8, 5))
 
-        # Propiedades similares
-        sns.scatterplot(data=propiedades_similares, x='Área Total', y='Precio Venta', color='#4682B4', alpha=0.7, label="Propiedades Similares")
+        # Datos de los precios
+        categorias = ['Precio Más Bajo en la Zona', 'Precio Estimado', 'Precio Más Alto en la Zona']
+        precios = [precio_min, precio_estimado, precio_max]
+        colores = ['#4682B4', 'red', '#D0006C']
 
-        # Precio mínimo y máximo con líneas y etiquetas
-        ax.axhline(precio_min, color='#4682B4', linestyle=':', linewidth=2, label="Precio Mínimo")
-        ax.axhline(precio_max, color='#D0006C', linestyle=':', linewidth=2, label="Precio Máximo")
+        # Crear el gráfico de barras
+        fig, ax = plt.subplots(figsize=(6, 5))
+        barras = ax.bar(categorias, precios, color=colores, alpha=0.8)
 
-        ax.text(propiedades_similares['Área Total'].min(), precio_min, f"S/ {precio_min:,.0f}", fontsize=10, color='#4682B4', verticalalignment='bottom')
-        ax.text(propiedades_similares['Área Total'].max(), precio_max, f"S/ {precio_max:,.0f}", fontsize=10, color='#D0006C', verticalalignment='top')
+        # Agregar etiquetas con los valores en cada barra
+        for barra, precio in zip(barras, precios):
+            ax.text(barra.get_x() + barra.get_width()/2, barra.get_height(), f"S/ {precio:,.0f}", 
+                    ha='center', va='bottom', fontsize=12, fontweight='bold')
 
-        # Precio estimado resaltado con marcador especial
-        ax.scatter(area_total, precio_estimado, color='red', s=200, label="Precio Estimado", edgecolors='black', marker='X')
-        ax.text(area_total, precio_estimado, f"S/ {precio_estimado:,.0f}", fontsize=12, color='red', fontweight='bold', verticalalignment='bottom')
-
-        # Etiquetas en cada punto
-        for i, row in propiedades_similares.iterrows():
-            ax.text(row['Área Total'], row['Precio Venta'], f"S/ {row['Precio Venta']:,.0f}", fontsize=9, ha='right', color='#4682B4')
-
-        # Ajustes de diseño
-        ax.set_xlabel("Área Total (m²)")
+        # Ajustes estéticos
         ax.set_ylabel("Precio en Soles")
-        ax.legend()
+        ax.set_title("Comparación de Precios")
+        ax.set_ylim(0, max(precios) * 1.1)  # Espacio extra en la parte superior
 
         st.pyplot(fig)
+
 
 
 
