@@ -158,25 +158,22 @@ if st.button("Predecir Precio"):
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
 
-        # Crear el gráfico de dispersión
-        fig, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(8, 2))
 
-        # Puntos de propiedades similares
-        sns.scatterplot(data=propiedades_similares, x='Área Total', y='Precio Venta', color='#4682B4', alpha=0.6, label="Propiedades Similares")
+        # Línea de rango
+        ax.hlines(1, precio_min, precio_max, color='gray', linewidth=5)
 
-        # Etiquetar cada punto con su precio
-        for i, row in propiedades_similares.iterrows():
-            ax.text(row['Área Total'], row['Precio Venta'], f"S/{row['Precio Venta']:.0f}", fontsize=9, ha='right')
+        # Precio estimado
+        ax.scatter(precio_estimado, 1, color='red', s=200, label="Precio Estimado", edgecolors='black')
 
-        # Marcar el precio estimado
-        ax.scatter(area_total, precio_estimado, color='red', s=100, label="Precio Estimado", edgecolors='black', marker='X')
-
-        # Etiquetas y título
-        ax.set_xlabel("Área Total (m²)")
-        ax.set_ylabel("Precio en Soles")
+        # Ajustes de diseño
+        ax.set_xlim(precio_min * 0.9, precio_max * 1.1)
+        ax.set_yticks([])
+        ax.set_xlabel("Precio en Soles")
         ax.legend()
 
         st.pyplot(fig)
+
 
 
 
