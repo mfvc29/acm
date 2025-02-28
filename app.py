@@ -158,36 +158,26 @@ if st.button("Predecir Precio"):
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
 
-
-        # Ajustar los datos
-        precios = propiedades_similares['Precio Venta']
-        precio_estimado = precio_estimado  # Precio estimado
-        precio_min = precios.min()  # Precio más bajo
-        precio_max = precios.max()  # Precio más alto
-
-        # Ajustar límites para incluir el precio estimado si está fuera del rango
-        limite_inferior = min(precio_min, precio_estimado) * 0.9
-        limite_superior = max(precio_max, precio_estimado) * 1.1
-        
-        # Crear el gráfico
+        # Crear el gráfico de dispersión
         fig, ax = plt.subplots(figsize=(8, 5))
-        sns.kdeplot(precios, fill=True, color='#C9C5B1', alpha=0.5, label='Distribución de Precios')
 
-        # Líneas verticales destacadas
-        ax.axvline(precio_estimado, color='red', linestyle='--', linewidth=2.5, label='Precio Estimado')
-        ax.axvline(precio_min, color='#4682B4', linestyle=':', linewidth=2.5, label='Precio Más Bajo en la Zona')
-        ax.axvline(precio_max, color='#D0006C', linestyle=':', linewidth=2.5, label='Precio Más Alto en la Zona')
+        # Propiedades similares
+        sns.scatterplot(data=propiedades_similares, x='Área Total', y='Precio Venta', color='#4682B4', alpha=0.7, label="Propiedades Similares")
 
-        # Ajustar límites
-        ax.set_xlim(limite_inferior, limite_superior)
-        ax.set_yticks([])  # Eliminar escala de densidad para hacerlo más visual
+        # Precio mínimo y máximo
+        ax.axhline(precio_min, color='#4682B4', linestyle=':', linewidth=2, label="Precio Mínimo")
+        ax.axhline(precio_max, color='#D0006C', linestyle=':', linewidth=2, label="Precio Máximo")
 
-        # Etiquetas y leyenda
-        ax.set_xlabel("Precio en Soles")
-        ax.set_ylabel("")
+        # Precio estimado resaltado
+        ax.scatter(area_total, precio_estimado, color='red', s=150, label="Precio Estimado", edgecolors='black', marker='X')
+
+        # Ajustes de diseño
+        ax.set_xlabel("Área Total (m²)")
+        ax.set_ylabel("Precio en Soles")
         ax.legend()
 
         st.pyplot(fig)
+
 
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
