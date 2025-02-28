@@ -100,22 +100,17 @@ def obtener_municipio(zona):
     return 'Municipio desconocido'
 
 # Interfaz de usuario
-
-# Configuración de la página
 st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wide")
-
-# Colores de RE/MAX IRON Consultores
-COLOR_PRIMARIO = "#0054A6"  # Azul
-COLOR_SECUNDARIO = "#D0006C"  # Rojo
-COLOR_CONTRASTE = "#2C2C2C"  # Gris oscuro
-COLOR_FONDO = "#FFFFFF"  # Blanco
-
 # Mostrar el logo
+#st.image("Fondo.jpeg", width=150)  # Ajusta el ancho según lo necesites
+
+# Título
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("Fondo.jpeg", width=200)
 with col2:
     st.title("Análisis Comparativo de Mercado (ACM)")
+
 
 # Descripción
 st.write(
@@ -124,11 +119,11 @@ st.write(
     "y comparar su relación con el valor estimado, lo que te ayudará a tomar decisiones más informadas."
 )
 
+
 # Opción para seleccionar el tipo de propiedad
-tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"], index=0, key="tipo_propiedad")
+tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
 # Formulario de entrada
-st.subheader("🔍 Detalles de la propiedad")
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
 banos = st.number_input("🚿 Número de Baños", min_value=0)
@@ -137,7 +132,7 @@ zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
 
 # Botón para realizar la predicción
-if st.button("Predecir Precio", key="boton_predecir"):
+if st.button("Predecir Precio"):
     if tipo_propiedad == "Casa":
         modelo = model_casas
         data = data_casas
@@ -152,7 +147,7 @@ if st.button("Predecir Precio", key="boton_predecir"):
     propiedades_similares['Estacionamiento'] = propiedades_similares['Estacionamiento'].astype(int)
     propiedades_similares['Dormitorios'] = propiedades_similares['Dormitorios'].astype(int)
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
-
+ 
     # Mostrar los resultados
     tipo_cambio = 3.71  # Tipo de cambio de soles a dólares
 
@@ -161,9 +156,10 @@ if st.button("Predecir Precio", key="boton_predecir"):
         
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
-    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles", delta_color="inverse")
-    st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*", delta_color="normal")
-    st.markdown(f"<p style='font-size: 10px; color: {COLOR_CONTRASTE};'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
+    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
+    st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
+    st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
+
 
     if not propiedades_similares.empty:
         # Calcular valores clave
@@ -178,18 +174,21 @@ if st.button("Predecir Precio", key="boton_predecir"):
 
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
+
+
+        # Datos de los precios
         categorias = ['Precio Más Bajo \nen la Zona', 'Precio Estimado', 'Precio Más Alto \nen la Zona']
         precios = [precio_min, precio_estimado, precio_max]
-        colores = [COLOR_PRIMARIO, COLOR_SECUNDARIO, COLOR_CONTRASTE]
+        colores = ['#4682B4', 'red', '#D0006C']
 
         # Crear el gráfico de barras
         fig, ax = plt.subplots(figsize=(8, 4))
-        barras = ax.bar(categorias, precios, color=colores, alpha=0.9)
+        barras = ax.bar(categorias, precios, color=colores, alpha=0.8)
 
         # Agregar etiquetas con los valores en cada barra
         for barra, precio in zip(barras, precios):
             ax.text(barra.get_x() + barra.get_width()/2, barra.get_height(), f"S/ {precio:,.0f}", 
-                    ha='center', va='bottom', fontsize=12, fontweight='bold', color="black")
+                    ha='center', va='bottom', fontsize=12, fontweight='bold')
 
         # Ajustes estéticos
         ax.set_yticks([])  # Quitar eje Y
@@ -206,8 +205,10 @@ if st.button("Predecir Precio", key="boton_predecir"):
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
         
-    # Predicción del precio de cierre
+
     precio_venta = precio_estimado
+    
+    # Asegurarse de usar el modelo adecuado
     if tipo_propiedad == "Casa":
         modelo = model_sigi_cu
         data = data_sigi_cu
@@ -229,19 +230,45 @@ if st.button("Predecir Precio", key="boton_predecir"):
     prediccion_log = modelo.predict(entrada)
     precio_cierre_pred = np.expm1(prediccion_log)[0]
 
-    # Mostrar el precio de cierre
-    precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
+    # Filtrar propiedades de la misma zona
+    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
 
-    st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles", delta_color="inverse")
-    st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*", delta_color="normal")
-    st.markdown(f"<p style='font-size: 10px; color: {COLOR_CONTRASTE};'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
+    # Calcular la distancia euclidiana entre la entrada y el dataset
+    features = ['Área Total log', 'Precio Venta log']
+    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
+    indices_similares = np.argsort(distancias[0])[:10]  # Tomar las 10 más cercanas
 
-    # Mostrar propiedades similares para el precio de cierre
-    propiedades_similares_mostradas = propiedades_similares.iloc[:10]
+    # Seleccionar propiedades similares
+    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+
+    # Revertir logaritmo para mostrar los valores originales
+    propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
+    propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
+    
+    
+
+    # Eliminar las columnas logarítmicas para claridad
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre', 'Codigo']]
+    #  "Codigo" tipo str
     propiedades_similares_mostradas["Codigo"] = propiedades_similares_mostradas["Codigo"].astype(str)
     
+    
+    # Obtener la zona y municipio
+    zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
+    zona, municipio = zonas_municipios[zona_num]
+    
+    precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
+
+    # Mostrar resultados
+    st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
+    st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
+    st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
+
+    # Mostrar propiedades similares
     if not propiedades_similares_mostradas.empty:
         st.write(propiedades_similares_mostradas)
     else:
         st.warning("⚠️ No se encontraron propiedades similares para el precio de cierre.")
+    
+    # Actualizar el valor del precio estimado para el siguiente ciclo
+    st.session_state.precio_estimado = precio_venta
