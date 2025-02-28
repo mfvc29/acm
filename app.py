@@ -174,7 +174,6 @@ if st.button("Predecir Precio"):
                     ha='center', va='bottom', fontsize=12, fontweight='bold')
 
         # Ajustes estéticos
-        ax.set_ylabel("Precio en Soles")
         ax.set_yticks([])  # Quitar eje Y
         ax.set_frame_on(False)  # Quitar borde del gráfico
         ax.set_title("Comparación de Precios")
