@@ -102,7 +102,7 @@ def obtener_municipio(zona):
 # Interfaz de usuario
 st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wide")
 # Mostrar el logo
-st.image("Fondo.jpeg", width=150)  # Ajusta el ancho según lo necesites
+#st.image("Fondo.jpeg", width=150)  # Ajusta el ancho según lo necesites
 
 # Título
 st.markdown(
