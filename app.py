@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+import seaborn as sns
 from sklearn.metrics import pairwise_distances
 import matplotlib.pyplot as plt
 
@@ -151,13 +152,13 @@ if st.button("Predecir Precio"):
         diferencia_max = precio_max - precio_estimado
 
         # Indicadores adicionales
-        st.metric("Precio Mínimo", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
-        st.metric("Precio Máximo", f"{precio_max:,.2f} soles", f"Diferencia: {diferencia_max:,.2f}")
+        st.metric("Precio Más Bajo en la Zona", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
+        st.metric("Precio Más Alto en la Zona", f"{precio_max:,.2f} soles", f"Diferencia: {diferencia_max:,.2f}")
 
-        # Gráfico de barras
+        '''# Gráfico de barras
         st.subheader("📈 Comparación de Precios")
         fig, ax = plt.subplots(figsize=(8, 4))
-        labels = ['Precio Mínimo', 'Precio Estimado', 'Precio Máximo']
+        labels = ['Precio Más Bajo en la Zona', 'Precio Estimado', 'Precio Más Alto en la Zona']
         valores = [precio_min, precio_estimado, precio_max]
         colores = ['#1f77b4', '#ff7f0e', '#2ca02c']
 
@@ -166,6 +167,22 @@ if st.button("Predecir Precio"):
             ax.text(valor, i, f"{valor:,.2f} soles", va='center', ha='left', fontsize=10)
         ax.set_xlabel("Precio en soles")
         ax.set_title("Comparación de Precios")
+        '''
+        # Crear el gráfico de dispersión con distribución
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sns.kdeplot(propiedades_similares['Precio Venta'], fill=True, color='blue', alpha=0.5, label='Distribución de Precios')
+        ax.axvline(precio_estimado, color='red', linestyle='--', linewidth=2, label='Precio Estimado')
+        ax.axvline(precio_min, color='green', linestyle=':', linewidth=2, label='Precio Más Bajo en la Zona')
+        ax.axvline(precio_max, color='purple', linestyle=':', linewidth=2, label='Precio Más Alto en la Zona')
+
+        # Etiquetas y título
+        ax.set_xlabel("Precio en Soles")
+        ax.set_ylabel("Densidad")
+        ax.set_title("📊 Comparación de Precios en la Zona")
+        ax.legend()
+
+        
+        
         st.pyplot(fig)
 
         # Tabla de propiedades similares
