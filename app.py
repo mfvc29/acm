@@ -160,7 +160,7 @@ if st.button("Predecir Precio"):
 
 
         # Datos de los precios
-        categorias = ['Precio Más Bajo en la Zona', 'Precio Estimado', 'Precio Más Alto en la Zona']
+        categorias = ['Precio Más Bajo \nen la Zona', 'Precio Estimado', 'Precio Más Alto \nen la Zona']
         precios = [precio_min, precio_estimado, precio_max]
         colores = ['#4682B4', 'red', '#D0006C']
 
@@ -175,6 +175,8 @@ if st.button("Predecir Precio"):
 
         # Ajustes estéticos
         ax.set_ylabel("Precio en Soles")
+        ax.set_yticks([])  # Quitar eje Y
+        ax.set_frame_on(False)  # Quitar borde del gráfico
         ax.set_title("Comparación de Precios")
         ax.set_ylim(0, max(precios) * 1.1)  # Espacio extra en la parte superior
 
