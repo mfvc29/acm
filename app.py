@@ -182,13 +182,13 @@ if st.button("Predecir Precio"):
         colores = ['#4682B4', 'red', '#D0006C']
 
         # Crear el gráfico de barras
-        fig, ax = plt.subplots(figsize=(3, 0.8))
+        fig, ax = plt.subplots(figsize=(3, 1))
         barras = ax.bar(categorias, precios, color=colores, alpha=0.8)
 
         # Agregar etiquetas con los valores en cada barra
         for barra, precio in zip(barras, precios):
             ax.text(barra.get_x() + barra.get_width()/2, barra.get_height(), f"S/ {precio:,.0f}", 
-                    ha='center', va='bottom', fontsize=8, fontweight='bold')
+                    ha='center', va='bottom', fontsize=6, fontweight='bold')
 
         # Ajustes estéticos
         ax.set_yticks([])  # Quitar eje Y
