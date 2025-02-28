@@ -158,36 +158,23 @@ if st.button("Predecir Precio"):
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
 
-        # Crear el gráfico de dispersión con distribución
-        # Obtener los límites naturales de la distribución
-        xmin = propiedades_similares['Precio Venta'].min()
-        xmax = propiedades_similares['Precio Venta'].max()
-
-        # Ajustar los límites para incluir el precio estimado si está fuera del rango
-        xmin = min(xmin, precio_estimado)
-        xmax = max(xmax, precio_estimado)
-
-        # Crear el gráfico
+        # Crear el gráfico de dispersión
         fig, ax = plt.subplots(figsize=(8, 5))
-        sns.kdeplot(propiedades_similares['Precio Venta'], fill=True, color='#C9C5B1', alpha=0.5, label='Distribución de Precios')
+        sns.scatterplot(data=propiedades_similares, x='Área Total', y='Precio Venta', color='#4682B4', alpha=0.6, label="Propiedades Similares")
 
-        # Líneas verticales
-        ax.axvline(precio_estimado, color='red', linestyle='--', linewidth=2, label='Precio Estimado')
-        ax.axvline(precio_min, color='#4682B4', linestyle=':', linewidth=2, label='Precio Más Bajo en la Zona')
-        ax.axvline(precio_max, color='#D0006C', linestyle=':', linewidth=2, label='Precio Más Alto en la Zona')
+        # Marcar el precio estimado
+        ax.scatter(area_total, precio_estimado, color='red', s=100, label="Precio Estimado", edgecolors='black', marker='X')
 
-        # Aplicar los nuevos límites
-        ax.set_xlim(xmin, xmax)
+        # Agregar línea de tendencia
+        sns.regplot(data=propiedades_similares, x='Área Total', y='Precio Venta', scatter=False, color='gray', line_kws={"linestyle": "--"})
 
-        # Eliminar los números del eje Y
-        ax.set_yticks([])
-
-        # Etiquetas y leyenda
-        ax.set_xlabel("Precio en Soles")
-        ax.set_ylabel("Densidad")
+        # Etiquetas y título
+        ax.set_xlabel("Área Total (m²)")
+        ax.set_ylabel("Precio en Soles")
         ax.legend()
 
         st.pyplot(fig)
+
 
 
         # Tabla de propiedades similares
