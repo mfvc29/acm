@@ -158,24 +158,36 @@ if st.button("Predecir Precio"):
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
 
-        fig, ax = plt.subplots(figsize=(8, 2))
 
-        # Línea de rango
-        ax.hlines(1, precio_min, precio_max, color='gray', linewidth=5)
+        # Ajustar los datos
+        precios = propiedades_similares['Precio Venta']
+        precio_estimado = precio_estimado  # Precio estimado
+        precio_min = precios.min()  # Precio más bajo
+        precio_max = precios.max()  # Precio más alto
 
-        # Precio estimado
-        ax.scatter(precio_estimado, 1, color='red', s=200, label="Precio Estimado", edgecolors='black')
+        # Ajustar límites para incluir el precio estimado si está fuera del rango
+        limite_inferior = min(precio_min, precio_estimado) * 0.9
+        limite_superior = max(precio_max, precio_estimado) * 1.1
+        
+        # Crear el gráfico
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sns.kdeplot(precios, fill=True, color='#C9C5B1', alpha=0.5, label='Distribución de Precios')
 
-        # Ajustes de diseño
-        ax.set_xlim(precio_min * 0.9, precio_max * 1.1)
-        ax.set_yticks([])
+        # Líneas verticales destacadas
+        ax.axvline(precio_estimado, color='red', linestyle='--', linewidth=2.5, label='Precio Estimado')
+        ax.axvline(precio_min, color='#4682B4', linestyle=':', linewidth=2.5, label='Precio Más Bajo en la Zona')
+        ax.axvline(precio_max, color='#D0006C', linestyle=':', linewidth=2.5, label='Precio Más Alto en la Zona')
+
+        # Ajustar límites
+        ax.set_xlim(limite_inferior, limite_superior)
+        ax.set_yticks([])  # Eliminar escala de densidad para hacerlo más visual
+
+        # Etiquetas y leyenda
         ax.set_xlabel("Precio en Soles")
+        ax.set_ylabel("")
         ax.legend()
 
         st.pyplot(fig)
-
-
-
 
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
