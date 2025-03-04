@@ -152,7 +152,7 @@ datos_adicionales = {
     }
 }
 
-
+st.subheader("📌 Datos de Propidad")
 # Formulario de entrada
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
