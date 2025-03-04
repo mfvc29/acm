@@ -123,6 +123,36 @@ st.write(
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
 
+
+
+
+# Datos del propietario
+st.subheader("📌 Datos del Propietario")
+nombre_propietario = st.text_input("Nombre del Propietario")
+correo_propietario = st.text_input("Correo del Propietario")
+telefono_propietario = st.text_input("Teléfono del Propietario")
+
+# Datos del agente
+st.subheader("📌 Datos del Agente")
+nombre_agente = st.text_input("Nombre del Agente")
+correo_agente = st.text_input("Correo del Agente")
+telefono_agente = st.text_input("Teléfono del Agente")
+
+# Almacenar los datos (aunque no se usen por ahora)
+datos_adicionales = {
+    "Propietario": {
+        "Nombre": nombre_propietario,
+        "Correo": correo_propietario,
+        "Teléfono": telefono_propietario
+    },
+    "Agente": {
+        "Nombre": nombre_agente,
+        "Correo": correo_agente,
+        "Teléfono": telefono_agente
+    }
+}
+
+
 # Formulario de entrada
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
@@ -279,8 +309,6 @@ if st.button("Predecir Precio"):
     
     precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
-    
-    
     # Mostrar resultados
     st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
     st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
