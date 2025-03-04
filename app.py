@@ -153,13 +153,21 @@ if st.button("Predecir Precio"):
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
+    
+    # Calcular precio por metro cuadrado
+    precio_m2 = precio_estimado / area_total
+
+    # Convertir el precio por m2 a dólares
+    precio_m2_dolares = precio_m2 / tipo_cambio
+
         
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
     st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
     st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
-
+    st.metric("Precio Estimado por m²", f"{precio_m2:,.2f} soles/m²")
+    st.metric("💵 Precio Estimado por m² en dólares", f"{precio_m2_dolares:,.2f} dólares/m²")
 
     if not propiedades_similares.empty:
         # Calcular valores clave
@@ -174,8 +182,6 @@ if st.button("Predecir Precio"):
 
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
-
-
         # Datos de los precios
         categorias = ['Precio Más Bajo \nen la Zona', 'Precio Estimado', 'Precio Más Alto \nen la Zona']
         precios = [precio_min, precio_estimado, precio_max]
@@ -230,7 +236,13 @@ if st.button("Predecir Precio"):
     # Predicción del precio de cierre en logaritmo
     prediccion_log = modelo.predict(entrada)
     precio_cierre_pred = np.expm1(prediccion_log)[0]
+    
+    # Calcular precio por metro cuadrado de cierre
+    precio_cierre_m2 = precio_cierre_pred / area_total
 
+    # Convertir el precio de cierre por m2 a dólares
+    precio_cierre_m2_dolares = precio_cierre_m2 / tipo_cambio
+    
     # Filtrar propiedades de la misma zona
     propiedades_similares = data[data['Zona_num'] == zona_num].copy()
 
@@ -248,8 +260,15 @@ if st.button("Predecir Precio"):
     
     
 
-    # Eliminar las columnas logarítmicas para claridad
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre', 'Codigo']]
+    # Calcular Precio por Metro Cuadrado para cada propiedad
+    propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre'] / propiedades_similares_mostradas['Área Total']
+
+    # Redondear valores
+    propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre por m²'].round(2)
+
+    # Incluir la columna en la tabla
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre', 'Precio Cierre por m²', 'Codigo']]
+
     #  "Codigo" tipo str
     propiedades_similares_mostradas["Codigo"] = propiedades_similares_mostradas["Codigo"].astype(str)
     
@@ -260,6 +279,8 @@ if st.button("Predecir Precio"):
     
     precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
+    
+    
     # Mostrar resultados
     st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
     st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
