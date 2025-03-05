@@ -313,7 +313,8 @@ if st.button("Predecir Precio"):
         # 🎨 **Colores personalizados**
         color_barra = "#004AAD"  # Azul Remax
         color_punto_base = "#E02020"  # Rojo Remax
-        color_punto_estimado = "black"  # Punto en negro para destacar
+        color_punto_estimado = "#18171C"  # Punto en negro para destacar
+        
         size_puntos = 100  # Tamaño de los puntos
 
         # 📊 **Gráfico de Comparación de Precios**
@@ -333,14 +334,14 @@ if st.button("Predecir Precio"):
             ax.scatter(precio_estimado, 1, color=color_estimado, s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado")
 
             # Textos mejor alineados
-            ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_punto_base)
-            ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=12, fontweight='bold', color=color_estimado)
-            ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_punto_base)
+            ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
+            ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=12, fontweight='light', color=color_estimado)
+            ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
 
             # Etiquetas
-            ax.text(limite_min - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='bold', color='white')
-            ax.text(limite_max + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='bold', color='white')
-            ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=12, fontweight='bold', color=color_estimado)
+            ax.text(limite_min - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='light', color='white')
+            ax.text(limite_max + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='light', color='white')
+            ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=12, fontweight='light', color=color_estimado)
 
             # Líneas de referencia
             ax.vlines(precio_min, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
@@ -375,14 +376,14 @@ if st.button("Predecir Precio"):
             ax.scatter(precio_m2, 1, color=color_estimado_m2, s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado por m²")
 
             # Textos más claros
-            ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_punto_base)
-            ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=12, fontweight='bold', color=color_estimado_m2)
-            ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_punto_base)
+            ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
+            ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=12, fontweight='light', color=color_estimado_m2)
+            ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
 
             # Etiquetas
-            ax.text(limite_m2_min - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='bold', color='white')
-            ax.text(limite_m2_max + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='bold', color='white')
-            ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=12, fontweight='bold', color=color_estimado_m2)
+            ax.text(limite_m2_min - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='light', color='white')
+            ax.text(limite_m2_max + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='light', color='white')
+            ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=12, fontweight='light', color=color_estimado_m2)
 
             # Líneas de referencia
             ax.vlines(precio_m2_area_min, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
