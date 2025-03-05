@@ -220,9 +220,9 @@ if st.button("Predecir Precio"):
         ax.scatter([precio_min, precio_estimado, precio_max], [1, 1, 1], color='mediumseagreen', s=80)
 
         # Etiquetas de valores
-        ax.text(precio_min, 1.05, f"USD {precio_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
-        ax.text(precio_estimado, 1.10, f"USD {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
-        ax.text(precio_max, 1.05, f"USD {precio_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
+        ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
+        ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
+        ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
 
         # Ajustes estéticos
         ax.set_yticks([])
