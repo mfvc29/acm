@@ -196,6 +196,9 @@ if st.button("Predecir Precio"):
     st.metric("💵 Precio Estimado por m² en dólares", f"{precio_m2_dolares:,.2f} dólares/m²")
 
     if not propiedades_similares.empty:
+        import streamlit as st
+        import matplotlib.pyplot as plt
+
         # Calcular valores clave
         precio_min = propiedades_similares['Precio Venta'].min()
         precio_max = propiedades_similares['Precio Venta'].max()
@@ -212,13 +215,9 @@ if st.button("Predecir Precio"):
                 precio_m2_area_min = precio_min / area_min
                 precio_m2_area_max = precio_max / area_max
 
-        # **Asegurar que precio_estimado esté dentro del rango**
-        precio_min = min(precio_min, precio_estimado)
-        precio_max = max(precio_max, precio_estimado)
-
-        # **Asegurar que precio_m2 esté dentro del rango**
-        precio_m2_area_min = min(precio_m2_area_min, precio_m2)
-        precio_m2_area_max = max(precio_m2_area_max, precio_m2)
+        # **Determinar color del precio estimado**
+        color_precio = "black" if precio_min <= precio_estimado <= precio_max else "red"
+        color_precio_m2 = "black" if precio_m2_area_min <= precio_m2 <= precio_m2_area_max else "red"
 
         # Indicadores adicionales
         st.metric("Precio Más Bajo en la Zona", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
@@ -232,14 +231,14 @@ if st.button("Predecir Precio"):
                 st.subheader("📈 Comparación de Precios")
                 fig, ax = plt.subplots(figsize=(4, 1))
                 ax.plot([precio_min, precio_max], [1, 1], color='mediumseagreen', linewidth=2)
-                ax.scatter([precio_min, precio_estimado, precio_max], [1, 1, 1], color='mediumseagreen', s=80)
+                ax.scatter([precio_min, precio_max], [1, 1], color='mediumseagreen', s=80)
+                ax.scatter([precio_estimado], [1], color=color_precio, s=80)
+
                 ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
-                ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
+                ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_precio)
                 ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
-                
-                # Agregar margen dinámico
-                margen = (precio_max - precio_min) * 0.05
-                ax.set_xlim(precio_min - margen, precio_max + margen)
+
+                ax.set_xlim(precio_min - 5000, precio_max + 5000)
                 ax.set_ylim(0.8, 1.2)
                 ax.set_yticks([])
                 ax.set_xticks([])
@@ -252,20 +251,21 @@ if st.button("Predecir Precio"):
                 st.subheader("📈 Comparación de Precios por m²")
                 fig, ax = plt.subplots(figsize=(4, 1))
                 ax.plot([precio_m2_area_min, precio_m2_area_max], [1, 1], color='mediumseagreen', linewidth=2)
-                ax.scatter([precio_m2_area_min, precio_m2, precio_m2_area_max], [1, 1, 1], color='mediumseagreen', s=80)
+                ax.scatter([precio_m2_area_min, precio_m2_area_max], [1, 1], color='mediumseagreen', s=80)
+                ax.scatter([precio_m2], [1], color=color_precio_m2, s=80)
+
                 ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
-                ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
+                ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_precio_m2)
                 ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
 
-                # Agregar margen dinámico
-                margen_m2 = (precio_m2_area_max - precio_m2_area_min) * 0.1
-                ax.set_xlim(precio_m2_area_min - margen_m2, precio_m2_area_max + margen_m2)
+                ax.set_xlim(precio_m2_area_min - 10, precio_m2_area_max + 10)
                 ax.set_ylim(0.8, 1.2)
                 ax.set_yticks([])
                 ax.set_xticks([])
                 ax.set_frame_on(False)
 
                 st.pyplot(fig)
+
      
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
