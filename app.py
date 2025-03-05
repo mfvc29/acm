@@ -12,6 +12,46 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 
+# Configuración de estilo global
+st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wide")
+
+# Estilos CSS personalizados
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #0c2749;
+        color: white;
+    }
+    .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
+        background-color: #485c77;
+        color: white;
+    }
+    .stButton>button {
+        background-color: #004AAD;
+        color: white;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+    .stButton>button:hover {
+        background-color: #00387D;
+    }
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
+        color: white;
+    }
+    .stMarkdown p {
+        color: white;
+    }
+    .stMetric {
+        color: white;
+    }
+    .stDataFrame {
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
@@ -26,7 +66,6 @@ data_sigi_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors
 data_sigi_du = pd.read_csv('data_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
-# Mapa de zonas con números actualizados
 zonas = {
     "Ancón": 1, "Ate Vitarte": 2, "Barranco": 3, "Breña": 4, "Carabayllo": 5, "Cercado de Lima": 6,
     "Chaclacayo": 7, "Chorrillos": 8, "Chosica": 9, "Cieneguilla": 10, "Comas": 11, "El Agustino": 12,
@@ -41,7 +80,7 @@ zonas = {
     "Barranca": 50, "Canta": 51, "Cañete": 52, "Huaral": 53, "Huarochirí": 54, "Huaura": 55,
     "Oyón": 56, "Yauyos": 57, "Cajatambo": 58
 }
- 
+
 # Diccionario de municipios con la nueva categorización
 municipios = {
     'Lima Norte': ['Ancón', 'Carabayllo', 'Comas', 'Independencia', 'Los Olivos', 'Puente Piedra', 'San Martín de Porres'],
@@ -96,17 +135,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     municipio = obtener_municipio(zona)
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
 
-# Función para obtener municipio basado en zona
-def obtener_municipio(zona):
-    for municipio, distritos in municipios.items():
-        if zona in distritos:
-            return municipio
-    return 'Municipio desconocido'
-
 # Interfaz de usuario
-st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wide")
-
-# Título
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("V1.png", width=200)
@@ -149,7 +178,7 @@ datos_adicionales = {
     }
 }
 
-st.subheader("📌 Datos de Propidad")
+st.subheader("📌 Datos de Propiedad")
 # Formulario de entrada
 area_total = st.number_input("📏 Área Total (m²)", min_value=10.0, format="%.2f")
 dormitorios = st.number_input("🛏 Número de Dormitorios", min_value=1)
@@ -247,6 +276,11 @@ if st.button("Predecir Precio"):
             ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_estimado)
             ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=9, fontweight='light')
 
+            # Etiquetas
+            ax.text(limite_min - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=8, fontweight='light', color='white')
+            ax.text(limite_max + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=8, fontweight='light', color='white')
+            ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=10, fontweight='light', color=color_estimado)
+
             # Estética
             ax.set_xlim(limite_min - 5000, limite_max + 5000)
             ax.set_yticks([])
@@ -275,6 +309,11 @@ if st.button("Predecir Precio"):
             ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=9, fontweight='light')
             ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_estimado_m2)
             ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=9, fontweight='light')
+
+            # Etiquetas
+            ax.text(limite_m2_min - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=8, fontweight='light', color='white')
+            ax.text(limite_m2_max + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=8, fontweight='light', color='white')
+            ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=10, fontweight='light', color=color_estimado_m2)
 
             # Estética
             ax.set_xlim(limite_m2_min - 100, limite_m2_max + 100)
