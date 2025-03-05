@@ -230,7 +230,7 @@ if st.button("Predecir Precio"):
         ax.set_xlim(precio_min - 5000, precio_max + 5000)
         ax.set_ylim(0.8, 1.2)
         # Mostrar en Streamlit
-        st.pyplot(fig)
+        #st.pyplot(fig)
 
         # Gráfico de barras para precios por m²
         st.subheader("📈 Comparación de Precios por m²")
@@ -307,8 +307,6 @@ if st.button("Predecir Precio"):
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
     
-    
-
     # Calcular Precio por Metro Cuadrado para cada propiedad
     propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre'] / propiedades_similares_mostradas['Área Total']
 
@@ -320,7 +318,6 @@ if st.button("Predecir Precio"):
 
     #  "Codigo" tipo str
     propiedades_similares_mostradas["Codigo"] = propiedades_similares_mostradas["Codigo"].astype(str)
-    
     
     # Obtener la zona y municipio
     zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
