@@ -229,9 +229,9 @@ if st.button("Predecir Precio"):
                 ax.scatter([min_value, est_value, max_value], [1, 1, 1], color=[color_barra, color_est, color_barra], s=100)
 
                 # Etiquetas
-                ax.text(min_value, 1.05, f"{unit} {min_value:,.0f}", ha='center', fontsize=10, fontweight='bold')
-                ax.text(est_value, 1.10, f"{unit} {est_value:,.0f}", ha='center', fontsize=12, fontweight='bold', color=color_est)
-                ax.text(max_value, 1.05, f"{unit} {max_value:,.0f}", ha='center', fontsize=10, fontweight='bold')
+                ax.text(min_value, 1.05, f"{unit} {min_value:,.0f}", ha='center', fontsize=10, fontweight='light')
+                ax.text(est_value, 1.10, f"{unit} {est_value:,.0f}", ha='center', fontsize=12, fontweight='light', color=color_est)
+                ax.text(max_value, 1.05, f"{unit} {max_value:,.0f}", ha='center', fontsize=10, fontweight='light')
 
                 ax.set_yticks([])
                 ax.set_xticks([])
