@@ -182,10 +182,8 @@ if st.button("Predecir Precio"):
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
-    
     # Calcular precio por metro cuadrado
     precio_m2 = precio_estimado / area_total
-
     # Convertir el precio por m2 a dólares
     precio_m2_dolares = precio_m2 / tipo_cambio
 
@@ -204,35 +202,57 @@ if st.button("Predecir Precio"):
         diferencia_min = precio_estimado - precio_min
         diferencia_max = precio_max - precio_estimado
 
+        area_min = propiedades_similares['Área Total'].min()
+        area_max = propiedades_similares['Área Total'].max()
+        precio_m2_area_min = precio_min / area_min
+        precio_m2_area_max = precio_max / area_max
+        
         # Indicadores adicionales
         st.metric("Precio Más Bajo en la Zona", f"{precio_min:,.2f} soles", f"Diferencia: {diferencia_min:,.2f}")
         st.metric("Precio Más Alto en la Zona", f"{precio_max:,.2f} soles", f"Diferencia: {diferencia_max:,.2f}")
 
-        # Gráfico de barras
+        # Gráfico de barras para precios
         st.subheader("📈 Comparación de Precios")
         # Crear la figura
         fig, ax = plt.subplots(figsize=(4, 1))
-
         # Dibujar la línea del rango
         ax.plot([precio_min, precio_max], [1, 1], color='mediumseagreen', linewidth=2)
-
         # Agregar los puntos
         ax.scatter([precio_min, precio_estimado, precio_max], [1, 1, 1], color='mediumseagreen', s=80)
-
         # Etiquetas de valores
         ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
         ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
         ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
-
         # Ajustes estéticos
         ax.set_yticks([])
         ax.set_xticks([])
         ax.set_frame_on(False)
         ax.set_xlim(precio_min - 5000, precio_max + 5000)
         ax.set_ylim(0.8, 1.2)
-
         # Mostrar en Streamlit
         st.pyplot(fig)
+
+        # Gráfico de barras para precios por m²
+        st.subheader("📈 Comparación de Precios por m²")
+        # Crear la figura
+        fig, ax = plt.subplots(figsize=(4, 1))
+        # Dibujar la línea del rango
+        ax.plot([precio_m2_area_min, precio_m2_area_max], [1, 1], color='mediumseagreen', linewidth=2)
+        # Agregar los puntos
+        ax.scatter([precio_m2_area_min, precio_m2, precio_m2_area_max], [1, 1, 1], color='mediumseagreen', s=80)
+        # Etiquetas de valores
+        ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
+        ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
+        ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
+        # Ajustes estéticos
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_frame_on(False)
+        ax.set_xlim(precio_m2_area_min - 10, precio_m2_area_max + 10)
+        ax.set_ylim(0.8, 1.2)
+        # Mostrar en Streamlit
+        st.pyplot(fig)
+        
 
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
