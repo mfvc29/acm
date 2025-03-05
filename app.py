@@ -5,6 +5,13 @@ import joblib
 import seaborn as sns
 from sklearn.metrics import pairwise_distances
 import matplotlib.pyplot as plt
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+import os
+
 
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
@@ -35,7 +42,6 @@ zonas = {
     "Oyón": 56, "Yauyos": 57, "Cajatambo": 58
 }
  
-
 # Diccionario de municipios con la nueva categorización
 municipios = {
     'Lima Norte': ['Ancón', 'Carabayllo', 'Comas', 'Independencia', 'Los Olivos', 'Puente Piedra', 'San Martín de Porres'],
@@ -47,8 +53,6 @@ municipios = {
     'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
-
-
 
 # Función para obtener municipio basado en zona
 def obtener_municipio(zona):
@@ -111,7 +115,6 @@ with col1:
 with col2:
     st.title("Análisis Comparativo de Mercado (ACM)")
 
-
 # Descripción
 st.write(
     "Ingresa los datos de la propiedad y selecciona el tipo de inmueble para obtener "
@@ -119,12 +122,8 @@ st.write(
     "y comparar su relación con el valor estimado, lo que te ayudará a tomar decisiones más informadas."
 )
 
-
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
-
-
-
 
 # Datos del propietario
 st.subheader("📌 Datos del Propietario")
@@ -190,7 +189,6 @@ if st.button("Predecir Precio"):
     # Convertir el precio por m2 a dólares
     precio_m2_dolares = precio_m2 / tipo_cambio
 
-        
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
     st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
@@ -212,27 +210,28 @@ if st.button("Predecir Precio"):
 
         # Gráfico de barras
         st.subheader("📈 Comparación de Precios")
-        # Datos de los precios
-        categorias = ['Precio Más Bajo \nen la Zona', 'Precio Estimado', 'Precio Más Alto \nen la Zona']
-        precios = [precio_min, precio_estimado, precio_max]
-        colores = ['#4682B4', 'red', '#D0006C']
+        # Crear la figura
+        fig, ax = plt.subplots(figsize=(4, 1))
 
-        # Crear el gráfico de barras
-        fig, ax = plt.subplots(figsize=(3, 1))
-        barras = ax.bar(categorias, precios, color=colores, alpha=0.8)
+        # Dibujar la línea del rango
+        ax.plot([precio_min, precio_max], [1, 1], color='mediumseagreen', linewidth=2)
 
-        # Agregar etiquetas con los valores en cada barra
-        for barra, precio in zip(barras, precios):
-            ax.text(barra.get_x() + barra.get_width()/2, barra.get_height(), f"S/ {precio:,.0f}", 
-                    ha='center', va='bottom', fontsize=5, fontweight='bold')
+        # Agregar los puntos
+        ax.scatter([precio_min, precio_estimado, precio_max], [1, 1, 1], color='mediumseagreen', s=80)
+
+        # Etiquetas de valores
+        ax.text(precio_min, 1.05, f"USD {precio_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
+        ax.text(precio_estimado, 1.10, f"USD {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color='black')
+        ax.text(precio_max, 1.05, f"USD {precio_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
 
         # Ajustes estéticos
-        ax.set_yticks([])  # Quitar eje Y
-        ax.set_frame_on(False)  # Quitar borde del gráfico
-        ax.set_xticklabels(categorias, fontsize=4)
-        #ax.set_title("Comparación de Precios")
-        ax.set_ylim(0, max(precios) * 1.1)  # Espacio extra en la parte superior
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_frame_on(False)
+        ax.set_xlim(precio_min - 5000, precio_max + 5000)
+        ax.set_ylim(0.8, 1.2)
 
+        # Mostrar en Streamlit
         st.pyplot(fig)
 
         # Tabla de propiedades similares
