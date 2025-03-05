@@ -196,95 +196,38 @@ if st.button("Predecir Precio"):
     st.metric("💵 Precio Estimado por m² en dólares", f"{precio_m2_dolares:,.2f} dólares/m²")
 
     if not propiedades_similares.empty:
-
-        # Calcular valores clave
-        precio_min = propiedades_similares['Precio Venta'].min()
-        precio_max = propiedades_similares['Precio Venta'].max()
-        diferencia_min = precio_estimado - precio_min
-        diferencia_max = precio_max - precio_estimado
-
-        area_min = propiedades_similares['Área Total'].min()
-        area_max = propiedades_similares['Área Total'].max()
-
-        # Evitar división por cero
-        if area_min == 0 or area_max == 0:
-                precio_m2_area_min, precio_m2_area_max = 0, 0
-        else:
-                precio_m2_area_min = precio_min / area_min
-                precio_m2_area_max = precio_max / area_max
-
-        # Ajustar límites para incluir el estimado sin perder referencias originales
-        limite_min = min(precio_min, precio_estimado)
-        limite_max = max(precio_max, precio_estimado)
-
-        limite_m2_min = min(precio_m2_area_min, precio_m2)
-        limite_m2_max = max(precio_m2_area_max, precio_m2)
-
         # Crear columnas
         col1, col2 = st.columns([1, 1])
 
-        # 🎨 **Colores personalizados**
-        color_barra = "#004AAD"  # Azul Remax
-        color_punto_base = "#E02020"  # Rojo Remax
-        color_punto_estimado = "black"  # Punto en negro para destacar
-        size_puntos = 100  # Tamaño de los puntos
+        def plot_price_range(ax, min_value, est_value, max_value, unit="USD"):
+                """ Función para graficar la barra de comparación de precios """
+                color_barra = "mediumseagreen"
+                color_est = "mediumseagreen" if min_value <= est_value <= max_value else "red"
 
-        # 📊 **Gráfico de Comparación de Precios**
-        with col1:
-                st.subheader("📈 Comparación de Precios")
-                fig, ax = plt.subplots(figsize=(5, 1))
+                ax.plot([min_value, max_value], [1, 1], color=color_barra, linewidth=4)
+                ax.scatter([min_value, est_value, max_value], [1, 1, 1], color=[color_barra, color_est, color_barra], s=100)
 
-                # Línea base con degradado
-                x_vals = np.linspace(limite_min, limite_max, 100)
-                ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8)
+                # Etiquetas
+                ax.text(min_value, 1.05, f"{unit} {min_value:,.0f}", ha='center', fontsize=10, fontweight='bold')
+                ax.text(est_value, 1.10, f"{unit} {est_value:,.0f}", ha='center', fontsize=12, fontweight='bold', color=color_est)
+                ax.text(max_value, 1.05, f"{unit} {max_value:,.0f}", ha='center', fontsize=10, fontweight='bold')
 
-                # Puntos de referencia
-                ax.scatter([precio_min, precio_max], [1, 1], color=color_punto_base, s=size_puntos, edgecolors="white", linewidth=2)
-
-                # Punto estimado (rojo si está fuera del rango)
-                color_estimado = "red" if precio_estimado < precio_min or precio_estimado > precio_max else color_punto_estimado
-                ax.scatter(precio_estimado, 1, color=color_estimado, s=size_puntos, edgecolors="white", linewidth=2)
-
-                # Textos mejor alineados
-                ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=9, fontweight='bold')
-                ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_estimado)
-                ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=9, fontweight='bold')
-
-                # Estética
-                ax.set_xlim(limite_min - 5000, limite_max + 5000)
                 ax.set_yticks([])
                 ax.set_xticks([])
                 ax.set_frame_on(False)
+                ax.set_xlim(min_value - 0.1 * (max_value - min_value), max_value + 0.1 * (max_value - min_value))
+                ax.set_ylim(0.8, 1.2)
 
+        with col1:
+                st.subheader("Valor estimado de Venta")
+                fig, ax = plt.subplots(figsize=(6, 1))
+                plot_price_range(ax, precio_min, precio_estimado, precio_max, unit="S/.")
                 st.pyplot(fig)
 
-        # 📊 **Gráfico de Comparación de Precios por m²**
         with col2:
-                st.subheader("📈 Comparación de Precios por m²")
-                fig, ax = plt.subplots(figsize=(5, 1))
-
-                # Línea base
-                x_vals = np.linspace(limite_m2_min, limite_m2_max, 100)
-                ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8)
-
-                # Puntos de referencia
-                ax.scatter([precio_m2_area_min, precio_m2_area_max], [1, 1], color=color_punto_base, s=size_puntos, edgecolors="white", linewidth=2)
-
-                # Punto estimado
-                color_estimado_m2 = "red" if precio_m2 < precio_m2_area_min or precio_m2 > precio_m2_area_max else color_punto_estimado
-                ax.scatter(precio_m2, 1, color=color_estimado_m2, s=size_puntos, edgecolors="white", linewidth=2)
-
-                # Textos más claros
-                ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=9, fontweight='bold')
-                ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='bold', color=color_estimado_m2)
-                ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=9, fontweight='bold')
-
-                # Estética
-                ax.set_xlim(limite_m2_min - 100, limite_m2_max + 100)
-                ax.set_yticks([])
-                ax.set_xticks([])
-                ax.set_frame_on(False)
-
+                st.subheader("Valor estimado de Venta por m²")
+                fig, ax = plt.subplots(figsize=(6, 1))
+                plot_price_range(ax, precio_m2_min, precio_m2_estimado, precio_m2_max, unit="S/.")
                 st.pyplot(fig)
 
 
