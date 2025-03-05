@@ -196,8 +196,29 @@ if st.button("Predecir Precio"):
     st.metric("💵 Precio Estimado por m² en dólares", f"{precio_m2_dolares:,.2f} dólares/m²")
 
     if not propiedades_similares.empty:
-        # Crear columnas
-        col1, col2 = st.columns([1, 1])
+
+        # Calcular valores clave
+        precio_min = propiedades_similares['Precio Venta'].min()
+        precio_max = propiedades_similares['Precio Venta'].max()
+        diferencia_min = precio_estimado - precio_min
+        diferencia_max = precio_max - precio_estimado
+
+        area_min = propiedades_similares['Área Total'].min()
+        area_max = propiedades_similares['Área Total'].max()
+
+        # Evitar división por cero
+        if area_min == 0 or area_max == 0:
+                precio_m2_area_min, precio_m2_area_max = 0, 0
+        else:
+                precio_m2_area_min = precio_min / area_min
+                precio_m2_area_max = precio_max / area_max
+
+        # Ajustar límites para incluir el estimado sin perder referencias originales
+        limite_min = min(precio_min, precio_estimado)
+        limite_max = max(precio_max, precio_estimado)
+
+        limite_m2_min = min(precio_m2_area_min, precio_m2)
+        limite_m2_max = max(precio_m2_area_max, precio_m2)
 
         def plot_price_range(ax, min_value, est_value, max_value, unit="USD"):
                 """ Función para graficar la barra de comparación de precios """
@@ -227,7 +248,7 @@ if st.button("Predecir Precio"):
         with col2:
                 st.subheader("Valor estimado de Venta por m²")
                 fig, ax = plt.subplots(figsize=(6, 1))
-                plot_price_range(ax, precio_m2_min, precio_m2_estimado, precio_m2_max, unit="S/.")
+                plot_price_range(ax, precio_m2_area_min, precio_m2, precio_m2_area_max, unit="S/.")
                 st.pyplot(fig)
 
 
