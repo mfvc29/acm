@@ -287,27 +287,7 @@ if st.button("Predecir Precio"):
 
                 st.pyplot(fig)
 
-        # Gráfico de barras para precios por m²
-        with col2:
-                st.subheader("📈 Comparación de Precios por m²")
-                fig, ax = plt.subplots(figsize=(4, 1))
-                ax.plot([limite_m2_min, limite_m2_max], [1, 1], color='mediumseagreen', linewidth=2)
-                ax.scatter([precio_m2_area_min, precio_m2_area_max], [1, 1], color='mediumseagreen', s=80)  # Puntos de referencia
-                ax.scatter([precio_m2], [1], color="black", s=80)  # Punto estimado
 
-                ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=8, fontweight='bold')
-                ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=10, fontweight='bold', color="black")
-                ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=8, fontweight='bold')
-
-                ax.set_xlim(limite_m2_min - 10, limite_m2_max + 10)
-                ax.set_ylim(0.8, 1.2)
-                ax.set_yticks([])
-                ax.set_xticks([])
-                ax.set_frame_on(False)
-
-                st.pyplot(fig)
-
-     
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
         propiedades_similares = propiedades_similares.reset_index(drop=True)    
@@ -315,7 +295,6 @@ if st.button("Predecir Precio"):
     else:
         st.warning("⚠️ No se encontraron propiedades similares en esta zona.")
         
-
     precio_venta = precio_estimado
     
     # Asegurarse de usar el modelo adecuado
