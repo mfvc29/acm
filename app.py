@@ -13,7 +13,12 @@ from email import encoders
 import os
 
 # Configuración de estilo global
-st.set_page_config(page_title="ACM - RE/MAX IRON", page_icon="🏡", layout="wide")
+st.set_page_config(
+    page_title="ACM - RE/MAX IRON",
+    page_icon="🏡",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Estilos CSS personalizados
 st.markdown(
@@ -26,27 +31,63 @@ st.markdown(
     .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
         background-color: #485c77;
         color: white;
+        border-radius: 5px;
+        padding: 8px;
     }
     .stButton>button {
         background-color: #004AAD;
         color: white;
         border-radius: 5px;
         padding: 10px 20px;
+        font-weight: bold;
     }
     .stButton>button:hover {
         background-color: #00387D;
     }
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
         color: white;
+        font-weight: bold;
     }
     .stMarkdown p {
         color: white;
     }
     .stMetric {
         color: white;
+        background-color: #1e3a5f;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .stMetric label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .stMetric div {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffffff;
     }
     .stDataFrame {
+        background-color: #1e3a5f;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .stDataFrame th {
+        background-color: #004AAD;
         color: white;
+        font-weight: bold;
+    }
+    .stDataFrame td {
+        background-color: #485c77;
+        color: white;
+    }
+    .stHeader {
+        color: white;
+        font-weight: bold;
     }
     </style>
     """,
@@ -141,13 +182,13 @@ with col1:
     st.image("V1.png", width=200)
 with col2:
     st.title("Análisis Comparativo de Mercado (ACM)")
-
-# Descripción
-st.write(
-    "Ingresa los datos de la propiedad y selecciona el tipo de inmueble para obtener "
-    "una estimación del precio de mercado. También podrás ver propiedades similares "
-    "y comparar su relación con el valor estimado, lo que te ayudará a tomar decisiones más informadas."
-)
+    st.markdown("""
+        <p style='font-size: 16px; color: white;'>
+            Ingresa los datos de la propiedad y selecciona el tipo de inmueble para obtener
+            una estimación del precio de mercado. También podrás ver propiedades similares
+            y comparar su relación con el valor estimado, lo que te ayudará a tomar decisiones más informadas.
+        </p>
+    """, unsafe_allow_html=True)
 
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
@@ -216,11 +257,14 @@ if st.button("Predecir Precio"):
 
     # Mostrar resultados
     st.subheader(f"📊 Resultados para la propiedad en {zona}, {municipio}")
-    st.metric("Precio Estimado", f"{precio_estimado:,.2f} soles")
-    st.metric("💵 Precio Estimado en dólares", f"{precio_estimado_dolares:,.2f} dólares*")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Precio Estimado", f"S/. {precio_estimado:,.2f}")
+        st.metric("Precio Estimado por m²", f"S/. {precio_m2:,.2f}/m²")
+    with col2:
+        st.metric("💵 Precio Estimado en dólares", f"$ {precio_estimado_dolares:,.2f}")
+        st.metric("💵 Precio Estimado por m² en dólares", f"$ {precio_m2_dolares:,.2f}/m²")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
-    st.metric("Precio Estimado por m²", f"{precio_m2:,.2f} soles/m²")
-    st.metric("💵 Precio Estimado por m² en dólares", f"{precio_m2_dolares:,.2f} dólares/m²")
 
     if not propiedades_similares.empty:
         # Calcular valores clave
@@ -394,8 +438,14 @@ if st.button("Predecir Precio"):
     precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
     # Mostrar resultados
-    st.metric("Precio Estimado de Cierre", f"{precio_cierre_pred:,.2f} soles")
-    st.metric("💵 Precio Estimado de Cierre en dólares", f"{precio_estimado_cierre_dolares:,.2f} dólares*")
+    st.subheader("📊 Resultados de Precio de Cierre")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Precio Estimado de Cierre", f"S/. {precio_cierre_pred:,.2f}")
+        st.metric("Precio Estimado de Cierre por m²", f"S/. {precio_cierre_m2:,.2f}/m²")
+    with col2:
+        st.metric("💵 Precio Estimado de Cierre en dólares", f"$ {precio_estimado_cierre_dolares:,.2f}")
+        st.metric("💵 Precio Estimado de Cierre por m² en dólares", f"$ {precio_cierre_m2_dolares:,.2f}/m²")
     st.markdown(f"<p style='font-size: 10px;'>Tipo de cambio utilizado: {tipo_cambio:,.2f} soles por dólar</p>", unsafe_allow_html=True)
 
     # Mostrar propiedades similares
