@@ -89,6 +89,9 @@ st.markdown(
         color: white;
         font-weight: bold;
     }
+    .stText, .stMarkdown, .stWrite, .stWarning, .stSuccess, .stError {
+        color: white !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
