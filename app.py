@@ -24,33 +24,53 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* Fondo de la aplicación y color del texto general */
     .stApp {
         background-color: #0c2749;
         color: white;
     }
+
+    /* Estilo de los labels (etiquetas) */
+    .stTextInput label, .stNumberInput label, .stSelectbox label {
+        color: white !important;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    /* Estilo de las barras de entrada */
     .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
         background-color: #485c77;
         color: white;
         border-radius: 5px;
         padding: 8px;
+        border: 1px solid #004AAD;
     }
+
+    /* Estilo del botón */
     .stButton>button {
         background-color: #004AAD;
         color: white;
         border-radius: 5px;
         padding: 10px 20px;
         font-weight: bold;
+        border: none;
     }
     .stButton>button:hover {
         background-color: #00387D;
     }
+
+    /* Estilo de los títulos y subtítulos */
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
         color: white;
         font-weight: bold;
     }
+
+    /* Estilo de los textos generales */
     .stMarkdown p {
         color: white;
     }
+
+    /* Estilo de las métricas */
     .stMetric {
         color: white;
         background-color: #1e3a5f;
@@ -69,6 +89,8 @@ st.markdown(
         font-weight: bold;
         color: #ffffff;
     }
+
+    /* Estilo de las tablas */
     .stDataFrame {
         background-color: #1e3a5f;
         border-radius: 10px;
@@ -84,13 +106,6 @@ st.markdown(
     .stDataFrame td {
         background-color: #485c77;
         color: white;
-    }
-    .stHeader {
-        color: white;
-        font-weight: bold;
-    }
-    .stText, .stMarkdown, .stWrite, .stWarning, .stSuccess, .stError {
-        color: white !important;
     }
     </style>
     """,
