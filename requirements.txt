@@ -8,3 +8,4 @@ matplotlib
 reportlab
 weasyprint
 seaborn
+lightgbm
