@@ -217,6 +217,7 @@ with col2:
 
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento","Local Comercial"])
+tipo_operacion = st.setectbox("Selecciona el tipo de operación", ["Venta", "Alquiler"])
 
 # Datos del propietario
 st.subheader("📌 Datos del Propietario")
@@ -253,9 +254,12 @@ estacionamiento = st.number_input("🚗 Número de Estacionamientos", min_value=
 zona_select = st.selectbox("📍 Selecciona el Distrito", list(zonas.keys()))
 zona_num = zonas[zona_select]
 
+
 # Botón para realizar la predicción
 if st.button("Predecir Precio"):
-    if tipo_propiedad == "Casa":
+    
+    
+    if tipo_propiedad == "Casa": 
         modelo = model_casas
         data = data_casas
     else:
@@ -329,23 +333,14 @@ if st.button("Predecir Precio"):
         size_puntos = 100  # Tamaño de los puntos
 
         # 📊 **Gráfico de Comparación de Precios**
+        # 📊 **Gráfico de Comparación de Precios**
         with col1:
             st.subheader("📈 Comparación de Precios")
             fig, ax = plt.subplots(figsize=(8, 2))
 
             # Definir los límites del gráfico
-            if precio_estimado < precio_min:
-                # Si el precio estimado es menor que el mínimo, ajustar el límite inferior
-                limite_inferior = precio_estimado - 5000  # Margen adicional
-                limite_superior = precio_max + 5000  # Margen adicional
-            elif precio_estimado > precio_max:
-                # Si el precio estimado es mayor que el máximo, ajustar el límite superior
-                limite_inferior = precio_min - 5000  # Margen adicional
-                limite_superior = precio_estimado + 5000  # Margen adicional
-            else:
-                # Si el precio estimado está dentro del rango, usar los límites normales
-                limite_inferior = precio_min - 5000  # Margen adicional
-                limite_superior = precio_max + 5000  # Margen adicional
+            limite_inferior = min(precio_min, precio_estimado) - 5000  # Margen adicional
+            limite_superior = max(precio_max, precio_estimado) + 5000  # Margen adicional
 
             # Línea base con degradado
             x_vals = np.linspace(limite_inferior, limite_superior, 100)
@@ -385,23 +380,14 @@ if st.button("Predecir Precio"):
             st.pyplot(fig)
 
         # 📊 **Gráfico de Comparación de Precios por m²**
+        # 📊 **Gráfico de Comparación de Precios por m²**
         with col2:
             st.subheader("📈 Comparación de Precios por m²")
             fig, ax = plt.subplots(figsize=(8, 2))
 
             # Definir los límites del gráfico
-            if precio_m2 < precio_m2_area_min:
-                # Si el precio estimado por m² es menor que el mínimo, ajustar el límite inferior
-                limite_inferior_m2 = precio_m2 - 100  # Margen adicional
-                limite_superior_m2 = precio_m2_area_max + 100  # Margen adicional
-            elif precio_m2 > precio_m2_area_max:
-                # Si el precio estimado por m² es mayor que el máximo, ajustar el límite superior
-                limite_inferior_m2 = precio_m2_area_min - 100  # Margen adicional
-                limite_superior_m2 = precio_m2 + 100  # Margen adicional
-            else:
-                # Si el precio estimado por m² está dentro del rango, usar los límites normales
-                limite_inferior_m2 = precio_m2_area_min - 100  # Margen adicional
-                limite_superior_m2 = precio_m2_area_max + 100  # Margen adicional
+            limite_inferior_m2 = min(precio_m2_area_min, precio_m2) - 100  # Margen adicional
+            limite_superior_m2 = max(precio_m2_area_max, precio_m2) + 100  # Margen adicional
 
             # Línea base
             x_vals = np.linspace(limite_inferior_m2, limite_superior_m2, 100)
