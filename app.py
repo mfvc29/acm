@@ -329,12 +329,17 @@ if st.button("Predecir Precio"):
         size_puntos = 100  # Tamaño de los puntos
 
         # 📊 **Gráfico de Comparación de Precios**
+        # 📊 **Gráfico de Comparación de Precios**
         with col1:
             st.subheader("📈 Comparación de Precios")
             fig, ax = plt.subplots(figsize=(8, 2))
 
+            # Definir un rango fijo para el gráfico
+            rango_fijo_min = min(precio_min, precio_estimado) - 5000  # Margen adicional
+            rango_fijo_max = max(precio_max, precio_estimado) + 5000  # Margen adicional
+
             # Línea base con degradado
-            x_vals = np.linspace(limite_min, limite_max, 100)
+            x_vals = np.linspace(rango_fijo_min, rango_fijo_max, 100)
             ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8, label="Rango de precios")
 
             # Puntos de referencia
@@ -350,8 +355,8 @@ if st.button("Predecir Precio"):
             ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
 
             # Etiquetas
-            ax.text(limite_min - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='light', color='white')
-            ax.text(limite_max + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='light', color='white')
+            ax.text(rango_fijo_min - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='light', color='white')
+            ax.text(rango_fijo_max + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='light', color='white')
             ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=12, fontweight='light', color=color_estimado)
 
             # Líneas de referencia
@@ -363,7 +368,7 @@ if st.button("Predecir Precio"):
             ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)
 
             # Estética
-            ax.set_xlim(limite_min - 5000, limite_max + 5000)
+            ax.set_xlim(rango_fijo_min, rango_fijo_max)  # Rango fijo
             ax.set_yticks([])
             ax.set_xticks([])
             ax.set_frame_on(False)
@@ -371,12 +376,17 @@ if st.button("Predecir Precio"):
             st.pyplot(fig)
 
         # 📊 **Gráfico de Comparación de Precios por m²**
+        # 📊 **Gráfico de Comparación de Precios por m²**
         with col2:
             st.subheader("📈 Comparación de Precios por m²")
             fig, ax = plt.subplots(figsize=(8, 2))
 
+            # Definir un rango fijo para el gráfico
+            rango_fijo_min_m2 = min(precio_m2_area_min, precio_m2) - 100  # Margen adicional
+            rango_fijo_max_m2 = max(precio_m2_area_max, precio_m2) + 100  # Margen adicional
+
             # Línea base
-            x_vals = np.linspace(limite_m2_min, limite_m2_max, 100)
+            x_vals = np.linspace(rango_fijo_min_m2, rango_fijo_max_m2, 100)
             ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8, label="Rango de precios por m²")
 
             # Puntos de referencia
@@ -392,8 +402,8 @@ if st.button("Predecir Precio"):
             ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
 
             # Etiquetas
-            ax.text(limite_m2_min - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='light', color='white')
-            ax.text(limite_m2_max + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='light', color='white')
+            ax.text(rango_fijo_min_m2 - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='light', color='white')
+            ax.text(rango_fijo_max_m2 + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='light', color='white')
             ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=12, fontweight='light', color=color_estimado_m2)
 
             # Líneas de referencia
@@ -405,13 +415,13 @@ if st.button("Predecir Precio"):
             ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)
 
             # Estética
-            ax.set_xlim(limite_m2_min - 100, limite_m2_max + 100)
+            ax.set_xlim(rango_fijo_min_m2, rango_fijo_max_m2)  # Rango fijo
             ax.set_yticks([])
             ax.set_xticks([])
             ax.set_frame_on(False)
 
             st.pyplot(fig)
-
+            
         # Tabla de propiedades similares
         st.subheader("🏘 Propiedades Similares")
         propiedades_similares = propiedades_similares.reset_index(drop=True)    
