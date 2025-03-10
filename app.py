@@ -179,8 +179,11 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Filtrar propiedades similares por zona
     propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+    
+    # Si no hay propiedades en la zona, buscar en todo el dataset
     if propiedades_similares.empty:
-        return precio_venta_pred, pd.DataFrame(), None, None
+        propiedades_similares = data.copy()
+        st.warning("⚠️ No se encontraron propiedades similares en esta zona. Mostrando propiedades similares a nivel general.")
 
     # Distancias
     features = ['Área Total log', 'Zona_num']
@@ -191,7 +194,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     # Revertir logaritmos
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta','Enlaces']]
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta', 'Enlaces']]
     
     # Asignar la zona y el municipio
     zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
@@ -444,15 +447,20 @@ if st.button("Predecir Precio"):
     # Predicción del precio de cierre en logaritmo
     prediccion_log = modelo.predict(entrada)
     precio_cierre_pred = np.expm1(prediccion_log)[0]
-    
+
     # Calcular precio por metro cuadrado de cierre
     precio_cierre_m2 = precio_cierre_pred / area_total
 
     # Convertir el precio de cierre por m2 a dólares
     precio_cierre_m2_dolares = precio_cierre_m2 / tipo_cambio
-    
+
     # Filtrar propiedades de la misma zona
     propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+
+    # Si no hay propiedades en la zona, buscar en todo el dataset
+    if propiedades_similares.empty:
+        propiedades_similares = data.copy()
+        st.warning("⚠️ No se encontraron propiedades similares en esta zona. Mostrando propiedades similares a nivel general.")
 
     # Calcular la distancia euclidiana entre la entrada y el dataset
     features = ['Área Total log', 'Precio Venta log']
@@ -465,7 +473,7 @@ if st.button("Predecir Precio"):
     # Revertir logaritmo para mostrar los valores originales
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Cierre'] = np.expm1(propiedades_similares_mostradas['Precio Cierre log'])
-    
+
     # Calcular Precio por Metro Cuadrado para cada propiedad
     propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre'] / propiedades_similares_mostradas['Área Total']
 
@@ -475,13 +483,13 @@ if st.button("Predecir Precio"):
     # Incluir la columna en la tabla
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Cierre', 'Precio Cierre por m²', 'Codigo']]
 
-    #  "Codigo" tipo str
+    # Asegurar que "Codigo" sea tipo str
     propiedades_similares_mostradas["Codigo"] = propiedades_similares_mostradas["Codigo"].astype(str)
-    
+
     # Obtener la zona y municipio
     zonas_municipios = {num: (zona, obtener_municipio(zona)) for zona, num in zonas.items()}
     zona, municipio = zonas_municipios[zona_num]
-    
+
     precio_estimado_cierre_dolares = precio_cierre_pred / tipo_cambio
 
     # Mostrar resultados
