@@ -213,7 +213,7 @@ with col2:
     """, unsafe_allow_html=True)
 
 # Opción para seleccionar el tipo de propiedad
-tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento"])
+tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento","Local Comercial"])
 
 # Datos del propietario
 st.subheader("📌 Datos del Propietario")
