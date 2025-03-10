@@ -217,7 +217,7 @@ with col2:
 
 # Opción para seleccionar el tipo de propiedad
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento","Local Comercial"])
-tipo_operacion = st.setectbox("Selecciona el tipo de operación", ["Venta", "Alquiler"])
+tipo_operacion = st.selectbox("Selecciona el tipo de operación", ["Venta", "Alquiler"])
 
 # Datos del propietario
 st.subheader("📌 Datos del Propietario")
