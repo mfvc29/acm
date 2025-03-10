@@ -115,14 +115,18 @@ st.markdown(
 # Cargar los modelos previamente guardados
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
+modelo_ventalocal = joblib.load('random_forest_model_vl.pkl')
 model_sigi_cu = joblib.load('modelo_cu.pkl')
 model_sigi_du = joblib.load('modelo_du.pkl')
+modelo_sigi_vl = joblib.load('modelo_vl.pkl')
 
 # Cargar datasets
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_ventalocal = pd.read_csv('dataset_vl.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_sigi_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_sigi_du = pd.read_csv('data_du.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_sigi_vl = pd.read_csv('data_vl.csv').drop(columns=['Municipio_num'], errors='ignore')
 
 # Diccionario de zonas (distritos)
 zonas = {
@@ -252,9 +256,13 @@ if st.button("Predecir Precio"):
         modelo = model_casas
         data = data_casas
     else:
-        modelo = model_departamentos
-        data = data_departamentos
-    
+        if tipo_propiedad == "Departamento":
+            modelo = model_departamentos
+            data = data_departamentos
+        else :
+            modelo = modelo_ventalocal
+            data = data_ventalocal
+            
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
         area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
 
@@ -415,8 +423,13 @@ if st.button("Predecir Precio"):
         modelo = model_sigi_cu
         data = data_sigi_cu
     else:
-        modelo = model_sigi_du
-        data = data_sigi_du
+        if tipo_propiedad == "Departamento":
+            modelo = model_sigi_du
+            data = data_sigi_du
+        else:
+            modelo = modelo_sigi_vl
+            data = data_sigi_vl
+        
 
     # Crear el DataFrame para la predicción de precio de cierre
     entrada = pd.DataFrame({
