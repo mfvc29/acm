@@ -193,29 +193,30 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
     prediccion_log = model.predict(entrada)
     precio_venta_pred = np.expm1(prediccion_log)[0]
 
-    # Filtrar propiedades similares por zona
-    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
-    
-    # Si no hay propiedades en la zona, buscar en todo el dataset
-    if propiedades_similares.empty:
-        propiedades_similares = data.copy()
-        st.warning("⚠️ No se encontraron propiedades similares en esta zona. Mostrando propiedades similares a nivel general.")
+    # Filtrar propiedades en la zona seleccionada
+    propiedades_en_zona = data[data['Zona_num'] == zona_num].copy()
 
-    # Distancias
+    # Si no hay propiedades en la zona, mostrar todas las propiedades en la zona
+    if propiedades_en_zona.empty:
+        st.warning(f"⚠️ No se encontraron propiedades similares en la zona seleccionada. Mostrando todas las propiedades en la zona {zona_num}.")
+        propiedades_en_zona = data.copy()  # Mostrar todas las propiedades disponibles
+
+    # Calcular distancias para propiedades similares
     features = ['Área Total log', 'Zona_num']
-    distancias = pairwise_distances(entrada[features], propiedades_similares[features])
-    indices_similares = np.argsort(distancias[0])[:10]
-    propiedades_similares_mostradas = propiedades_similares.iloc[indices_similares].copy()
+    distancias = pairwise_distances(entrada[features], propiedades_en_zona[features])
+    indices_similares = np.argsort(distancias[0])[:10]  # Tomar las 10 más cercanas
+    propiedades_similares_mostradas = propiedades_en_zona.iloc[indices_similares].copy()
 
     # Revertir logaritmos
     propiedades_similares_mostradas['Área Total'] = np.expm1(propiedades_similares_mostradas['Área Total log'])
     propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento', 'Precio Venta', 'Enlaces']]
-    
+
     # Asignar la zona y el municipio
     zona = [nombre for nombre, num in zonas.items() if num == zona_num][0]
     municipio = obtener_municipio(zona)
     return precio_venta_pred, propiedades_similares_mostradas, zona, municipio
+
 
 # Interfaz de usuario
 col1, col2 = st.columns([1, 4])
