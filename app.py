@@ -149,19 +149,16 @@ data_alquiler_cierre_local = pd.read_csv('data_lc.csv').drop(columns=['Municipio
 
 # Diccionario de zonas (distritos)
 zonas = {
-    "Ancón": 1, "Ate Vitarte": 2, "Barranco": 3, "Breña": 4, "Carabayllo": 5, "Cercado de Lima": 6,
-    "Chaclacayo": 7, "Chorrillos": 8, "Chosica": 9, "Cieneguilla": 10, "Comas": 11, "El Agustino": 12,
-    "Independencia": 13, "Jesús María": 14, "La Molina": 15, "La Victoria": 16, "Lince": 17,
-    "Los Olivos": 18, "Lurín": 19, "Magdalena del Mar": 20, "Miraflores": 21, "Pachacamac": 22,
-    "Pucusana": 23, "Pueblo Libre": 24, "Puente Piedra": 25, "Punta Hermosa": 26, "Punta Negra": 27,
-    "Rímac": 28, "San Bartolo": 29, "San Borja": 30, "San Isidro": 31, "San Juan de Lurigancho": 32,
-    "San Juan de Miraflores": 33, "San Luis": 34, "San Martín de Porres": 35, "San Miguel": 36,
-    "Santa Anita": 37, "Santa María del Mar": 38, "Santiago de Surco": 39, "Surquillo": 40,
-    "Villa El Salvador": 41, "Villa María del Triunfo": 42, "Callao": 43, "Bellavista": 44,
-    "Carmen de la Legua Reynoso": 45, "La Perla": 46, "La Punta": 47, "Ventanilla": 48, "Mi Perú": 49,
-    "Barranca": 50, "Canta": 51, "Cañete": 52, "Huaral": 53, "Huarochirí": 54, "Huaura": 55,
-    "Oyón": 56, "Yauyos": 57, "Cajatambo": 58
+    "Ancón": 1, "Puente Piedra": 2, "Carabayllo": 3, "Comas": 4, "Los Olivos": 5, "Independencia": 6, "San Martín de Porres": 7,
+    "San Juan de Lurigancho": 8, "El Agustino": 9, "Santa Anita": 10, "San Luis": 11, "Ate Vitarte": 12, "Cieneguilla": 13, "Chaclacayo": 14, "Chosica": 15,
+    "San Isidro": 16, "Miraflores": 17, "Barranco": 18, "San Borja": 19, "Santiago de Surco": 20, "La Molina": 21,
+    "Cercado de Lima": 22, "Breña": 23, "La Victoria": 24, "Rímac": 25,
+    "Jesús María": 26, "Lince": 27, "Magdalena del Mar": 28, "Pueblo Libre": 29, "San Miguel": 30, "Surquillo": 31,
+    "Villa María del Triunfo": 32, "Villa El Salvador": 33, "Chorrillos": 34, "Lurín": 35, "Pachacamac": 36, "Pucusana": 37,
+    "San Juan de Miraflores": 38, "Punta Hermosa": 39, "Punta Negra": 40, "San Bartolo": 41, "Santa María del Mar": 42,
+    "Callao": 43, "Barranca": 44, "Canta": 45, "Cañete": 46, "Huaral": 47, "Huarochirí": 48, "Huaura": 49, "Oyón": 50, "Yauyos": 51, "Cajatambo": 52
 }
+
 
 # Diccionario de municipios con la nueva categorización
 municipios = {
@@ -171,7 +168,7 @@ municipios = {
     'Lima Centro': ['Breña', 'Cercado de Lima', 'La Victoria', 'Rímac'],
     'Lima Moderna': ['Jesús María', 'Lince', 'Magdalena del Mar', 'Pueblo Libre', 'San Miguel', 'Surquillo'],
     'Lima Sur': ['Chorrillos', 'Lurín', 'Pachacamac', 'Pucusana', 'Punta Hermosa', 'Punta Negra', 'San Bartolo', 'Santa María del Mar', 'Villa El Salvador', 'Villa María del Triunfo'],
-    'Lima Callao': ['Callao', 'Bellavista', 'Carmen de la Legua Reynoso', 'La Perla', 'La Punta', 'Ventanilla', 'Mi Perú'],
+    'Lima Callao': ['Callao'],
     'Fuera de Lima': ['Barranca', 'Canta', 'Cañete', 'Huaral', 'Huarochirí', 'Huaura', 'Oyón', 'Yauyos', 'Cajatambo']
 }
 
