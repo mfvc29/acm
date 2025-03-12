@@ -112,21 +112,40 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Cargar los modelos previamente guardados
+# Cargar los modelos de venta 
 model_casas = joblib.load('random_forest_model.pkl')
 model_departamentos = joblib.load('random_forest_model_du.pkl')
 modelo_ventalocal = joblib.load('random_forest_model_vl.pkl')
+# Cargar los modelos de cierre de venta
 model_sigi_cu = joblib.load('modelo_cu.pkl')
 model_sigi_du = joblib.load('modelo_du.pkl')
 modelo_sigi_vl = joblib.load('modelo_vl.pkl')
-
-# Cargar datasets
+# Cargar datasets de venta
 data_casas = pd.read_csv('dataset.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_departamentos = pd.read_csv('dataset_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_ventalocal = pd.read_csv('dataset_vl.csv').drop(columns=['Municipio_num'], errors='ignore')
+# Cargar datasets de cierre de venta
 data_sigi_cu = pd.read_csv('data_cu.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_sigi_du = pd.read_csv('data_du.csv').drop(columns=['Municipio_num'], errors='ignore')
 data_sigi_vl = pd.read_csv('data_vl.csv').drop(columns=['Municipio_num'], errors='ignore')
+
+# Cargar los modelos de alquiler
+model_alquiler_casas = joblib.load('random_forest_model_cau.pkl')
+model_alquiler_departamentos = joblib.load('random_forest_model_dau.pkl') 
+model_alquiler_local = joblib.load('random_forest_model_al.pkl') 
+# Cargar los modelos de cierre de alquiler
+model_alquiler_cierre_casas = joblib.load('modelo_ac.pkl') 
+model_alquiler_cierre_departamentos = joblib.load('modelo_ad.pkl') 
+model_alquiler_cierre_local = joblib.load('modelo_lc.pkl')
+# Cargar datasets de alquiler
+data_alquiler_casas = pd.read_csv('dataset_cau.csv').drop(columns=['Municipio_num'], errors='ignore')
+data_alquiler_departamentos = pd.read_csv('dataset_dau.csv').drop(columns=['Municipio_num'], errors='ignore') 
+data_alquiler_local = pd.read_csv('dataset_al.csv').drop(columns=['Municipio_num'], errors='ignore') 
+# Cargar datasets de cierre de alquiler
+data_alquiler_cierre_casas = pd.read_csv('data_ac.csv').drop(columns=['Municipio_num'], errors='ignore') 
+data_alquiler_cierre_departamentos = pd.read_csv('data_ad.csv').drop(columns=['Municipio_num'], errors='ignore') 
+data_alquiler_cierre_local = pd.read_csv('data_lc.csv').drop(columns=['Municipio_num'], errors='ignore') 
+
 
 # Diccionario de zonas (distritos)
 zonas = {
@@ -257,21 +276,33 @@ zona_num = zonas[zona_select]
 
 # Botón para realizar la predicción
 if st.button("Predecir Precio"):
-    
-    
-    if tipo_propiedad == "Casa": 
-        modelo = model_casas
-        data = data_casas
-    else:
-        if tipo_propiedad == "Departamento":
+    if tipo_operacion == "Venta":
+        if tipo_propiedad == "Casa":
+            modelo = model_casas
+            data = data_casas
+        elif tipo_propiedad == "Departamento":
             modelo = model_departamentos
             data = data_departamentos
-        else :
+        else:  # Local Comercial
             modelo = modelo_ventalocal
             data = data_ventalocal
-            
+    elif tipo_operacion == "Alquiler":
+        if tipo_propiedad == "Casa":
+            modelo = model_alquiler_casas
+            data = data_alquiler_casas
+        elif tipo_propiedad == "Departamento":
+            modelo = model_alquiler_departamentos
+            data = data_alquiler_departamentos
+        else:  # Local Comercial
+            modelo = model_alquiler_local
+            data = data_alquiler_local
+    else:
+        st.error("Operación no válida. Selecciona 'Venta' o 'Alquiler'.")
+
+    # Llamar a la función de predicción
     precio_estimado, propiedades_similares, zona, municipio = predecir_precio_y_similares(
-        area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo)
+        area_total, dormitorios, banos, estacionamiento, zona_num, data, modelo
+    )
 
     propiedades_similares['Área Total'] = propiedades_similares['Área Total'].round(2)
     propiedades_similares['Estacionamiento'] = propiedades_similares['Estacionamiento'].astype(int)
