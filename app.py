@@ -198,7 +198,7 @@ def predecir_precio_y_similares(area_total, dormitorios, banos, estacionamiento,
 
     # Si no hay propiedades en la zona, mostrar todas las propiedades en la zona
     if propiedades_en_zona.empty:
-        st.warning(f"⚠️ No se encontraron propiedades similares en la zona seleccionada. Mostrando todas las propiedades en la zona {zona_num}.")
+        st.warning(f"⚠️ No se encontraron propiedades similares en el distrito seleccionado. Mostrando todas las propiedades en la zona.")
         propiedades_en_zona = data.copy()  # Mostrar todas las propiedades disponibles
 
     # Calcular distancias para propiedades similares
