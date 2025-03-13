@@ -465,16 +465,26 @@ if st.button("Predecir Precio"):
     precio_venta = precio_estimado
     
     # Asegurarse de usar el modelo adecuado
-    if tipo_propiedad == "Casa":
-        modelo = model_sigi_cu
-        data = data_sigi_cu
-    else:
-        if tipo_propiedad == "Departamento":
-            modelo = model_sigi_du
-            data = data_sigi_du
-        else:
-            modelo = modelo_sigi_vl
-            data = data_sigi_vl
+    if tipo_operacion == "Venta":
+        if tipo_propiedad == "Casa":
+            modelo_sigi = model_sigi_cu
+            data_sigi = data_sigi_cu
+        elif tipo_propiedad == "Departamento":
+            modelo_sigi = model_sigi_du
+            data_sigi = data_sigi_du
+        else:      # Local Comercial
+            modelo_sigi = modelo_sigi_vl
+            data_sigi = data_sigi_vl
+    elif tipo_operacion == "Alquiler":
+        if tipo_propiedad == "Casa":
+            modelo_sigi = model_alquiler_cierre_casas
+            data_sigi = data_alquiler_cierre_casas
+        elif tipo_propiedad == "Departamento":
+            modelo_sigi = model_alquiler_cierre_departamentos
+            data_sigi = data_alquiler_cierre_departamentos
+        else:      # Local Comercial
+            modelo_sigi = model_alquiler_cierre_local
+            data_sigi = data_alquiler_cierre_local
         
 
     # Crear el DataFrame para la predicción de precio de cierre
