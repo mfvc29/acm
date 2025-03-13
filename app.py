@@ -365,43 +365,33 @@ if st.button("Predecir Precio"):
         # 📊 **Gráfico de Comparación de Precios**
         with col1:
             st.subheader("📈 Comparación de Precios")
-            fig, ax = plt.subplots(figsize=(8, 2))
-
-            # Definir los límites del gráfico
-            limite_inferior = min(precio_min, precio_estimado) - 5000  # Margen adicional
-            limite_superior = max(precio_max, precio_estimado) + 5000  # Margen adicional
-
-            # Línea base con degradado
+            fig, ax = plt.subplots(figsize=(8, 2))   
+            # Ajustar los límites del gráfico
+            limite_inferior = min(precio_min, precio_estimado, precio_max) - 5000  # Margen adicional
+            limite_superior = max(precio_min, precio_estimado, precio_max) + 5000  # Margen adicional   
+            # Línea base (barra azul)
             x_vals = np.linspace(limite_inferior, limite_superior, 100)
-            ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8, label="Rango de precios")
-
-            # Puntos de referencia
-            ax.scatter([precio_min, precio_max], [1, 1], color=color_punto_base, s=size_puntos, edgecolors="white", linewidth=2, label="Precio mínimo/máximo")
-
-            # Punto estimado (rojo si está fuera del rango)
-            color_estimado = "red" if precio_estimado < precio_min or precio_estimado > precio_max else color_punto_estimado
-            ax.scatter(precio_estimado, 1, color=color_estimado, s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado")
-
-            # Textos mejor alineados
-            ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
-            ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=12, fontweight='light', color=color_estimado)
-            ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
-
+            ax.plot(x_vals, [1] * 100, color="blue", linewidth=3, alpha=0.8, label="Rango de precios")   
+            # Puntos de referencia (rojo para mínimos/máximos)
+            ax.scatter([precio_min, precio_max], [1, 1], color="red", s=size_puntos, edgecolors="white", linewidth=2, label="Precio mínimo/máximo")   
+            # Punto de referencia (negro para el estimado)
+            ax.scatter(precio_estimado, 1, color="black", s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado")    
+            # Textos
+            ax.text(precio_min, 1.05, f"S/. {precio_min:,.0f}", ha='center', fontsize=10, fontweight='light', color="red")
+            ax.text(precio_estimado, 1.10, f"S/. {precio_estimado:,.0f}", ha='center', fontsize=12, fontweight='light', color="black")
+            ax.text(precio_max, 1.05, f"S/. {precio_max:,.0f}", ha='center', fontsize=10, fontweight='light', color="red")    
             # Etiquetas
-            ax.text(limite_inferior - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='light', color='white')
-            ax.text(limite_superior + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='light', color='white')
-            ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=12, fontweight='light', color=color_estimado)
-
+            ax.text(limite_inferior - 5000, 0.95, "Precio mínimo en la zona", ha='left', fontsize=10, fontweight='light', color="white")
+            ax.text(limite_superior + 5000, 0.95, "Precio máximo en la zona", ha='right', fontsize=10, fontweight='light', color="white")
+            ax.text(precio_estimado, 1.15, "Precio estimado", ha='center', fontsize=12, fontweight='light', color="black")  
             # Líneas de referencia
-            ax.vlines(precio_min, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
-            ax.vlines(precio_max, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
-            ax.vlines(precio_estimado, 0.95, 1.10, color=color_estimado, linestyle="--", alpha=0.5)
-
+            ax.vlines(precio_min, 0.95, 1.05, color="red", linestyle="--", alpha=0.5)
+            ax.vlines(precio_max, 0.95, 1.05, color="red", linestyle="--", alpha=0.5)
+            ax.vlines(precio_estimado, 0.95, 1.10, color="black", linestyle="--", alpha=0.5)   
             # Leyenda
-            ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)
-
-            # Estética
-            ax.set_xlim(limite_inferior, limite_superior)  # Rango dinámico
+            ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)    
+            # Ajustar los límites del eje x
+            ax.set_xlim(limite_inferior, limite_superior)
             ax.set_yticks([])
             ax.set_xticks([])
             ax.set_frame_on(False)
@@ -412,43 +402,33 @@ if st.button("Predecir Precio"):
         # 📊 **Gráfico de Comparación de Precios por m²**
         with col2:
             st.subheader("📈 Comparación de Precios por m²")
-            fig, ax = plt.subplots(figsize=(8, 2))
-
-            # Definir los límites del gráfico
-            limite_inferior_m2 = min(precio_m2_area_min, precio_m2) - 100  # Margen adicional
-            limite_superior_m2 = max(precio_m2_area_max, precio_m2) + 100  # Margen adicional
-
-            # Línea base
+            fig, ax = plt.subplots(figsize=(8, 2)) 
+            # Ajustar los límites del gráfico
+            limite_inferior_m2 = min(precio_m2_area_min, precio_m2, precio_m2_area_max) - 100
+            limite_superior_m2 = max(precio_m2_area_min, precio_m2, precio_m2_area_max) + 100   
+            # Línea base (barra azul)
             x_vals = np.linspace(limite_inferior_m2, limite_superior_m2, 100)
-            ax.plot(x_vals, [1] * 100, color=color_barra, linewidth=3, alpha=0.8, label="Rango de precios por m²")
-
-            # Puntos de referencia
-            ax.scatter([precio_m2_area_min, precio_m2_area_max], [1, 1], color=color_punto_base, s=size_puntos, edgecolors="white", linewidth=2, label="Precio mínimo/máximo por m²")
-
-            # Punto estimado
-            color_estimado_m2 = "red" if precio_m2 < precio_m2_area_min or precio_m2 > precio_m2_area_max else color_punto_estimado
-            ax.scatter(precio_m2, 1, color=color_estimado_m2, s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado por m²")
-
-            # Textos más claros
-            ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
-            ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=12, fontweight='light', color=color_estimado_m2)
-            ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=10, fontweight='light', color=color_punto_base)
-
+            ax.plot(x_vals, [1] * 100, color="blue", linewidth=3, alpha=0.8, label="Rango de precios por m²")   
+            # Puntos de referencia (rojo para mínimos/máximos)
+            ax.scatter([precio_m2_area_min, precio_m2_area_max], [1, 1], color="red", s=size_puntos, edgecolors="white", linewidth=2, label="Precio mínimo/máximo por m²")   
+            # Punto de referencia (negro para el estimado)
+            ax.scatter(precio_m2, 1, color="black", s=size_puntos, edgecolors="white", linewidth=2, label="Precio estimado por m²")    
+            # Textos
+            ax.text(precio_m2_area_min, 1.05, f"S/. {precio_m2_area_min:,.0f}", ha='center', fontsize=10, fontweight='light', color="red")
+            ax.text(precio_m2, 1.10, f"S/. {precio_m2:,.0f}", ha='center', fontsize=12, fontweight='light', color="black")
+            ax.text(precio_m2_area_max, 1.05, f"S/. {precio_m2_area_max:,.0f}", ha='center', fontsize=10, fontweight='light', color="red")   
             # Etiquetas
-            ax.text(limite_inferior_m2 - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='light', color='white')
-            ax.text(limite_superior_m2 + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='light', color='white')
-            ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=12, fontweight='light', color=color_estimado_m2)
-
+            ax.text(limite_inferior_m2 - 100, 0.95, "Precio mínimo por m² en la zona", ha='left', fontsize=10, fontweight='light', color="white")
+            ax.text(limite_superior_m2 + 100, 0.95, "Precio máximo por m² en la zona", ha='right', fontsize=10, fontweight='light', color="white")
+            ax.text(precio_m2, 1.15, "Precio estimado por m²", ha='center', fontsize=12, fontweight='light', color="black")   
             # Líneas de referencia
-            ax.vlines(precio_m2_area_min, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
-            ax.vlines(precio_m2_area_max, 0.95, 1.05, color=color_punto_base, linestyle="--", alpha=0.5)
-            ax.vlines(precio_m2, 0.95, 1.10, color=color_estimado_m2, linestyle="--", alpha=0.5)
-
+            ax.vlines(precio_m2_area_min, 0.95, 1.05, color="red", linestyle="--", alpha=0.5)
+            ax.vlines(precio_m2_area_max, 0.95, 1.05, color="red", linestyle="--", alpha=0.5)
+            ax.vlines(precio_m2, 0.95, 1.10, color="black", linestyle="--", alpha=0.5)    
             # Leyenda
-            ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)
-
-            # Estética
-            ax.set_xlim(limite_inferior_m2, limite_superior_m2)  # Rango dinámico
+            ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=10, frameon=False)    
+            # Ajustar los límites del eje x
+            ax.set_xlim(limite_inferior_m2, limite_superior_m2)
             ax.set_yticks([])
             ax.set_xticks([])
             ax.set_frame_on(False)
