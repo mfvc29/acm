@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Propiedad</title>
+    <style>
+        body {
+            font-family: "Gotham", serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            margin: 40px;
+            text-align: justify;
+        }
+        h1, h2, h3 {
+            color: #004AAD;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        h1 {
+           text-align: center;
+           font-size: 20px;
+        }
+        h2 {
+            font-size: 16px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #004AAD;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+        h3 {
+            font-size: 14px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            height: 70px;
+        }
+        .highlight {
+            background-color: #f7f7f7;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-family: "Times New Roman", serif;
+            font-weight: 600;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section p {
+            margin: 8px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 11px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 6px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f7f7f7;
+            font-weight: bold;
+            color: #004AAD;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .charts-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.02cm; /* Espacio entre gráficos */
+            margin-bottom: 20px;
+        }
+        .charts-container img {
+            width: 45%; /* Ancho reducido para evitar superposición */
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+        .chart-title {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #004AAD;
+        }
+        .text-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="{{ logo_url }}" alt="Logo">
+        </div>
+    </div>
+
+    <h1>Reporte de Análisis de Propiedad</h1>
+
+    <div class="section">
+        <h2>Información General</h2>
+        <p><strong>Propietario:</strong> {{ propietario }}</p>
+        <p><strong>Agente responsable:</strong> {{ agente }}</p>
+        <p><strong>Correo del agente:</strong> {{ correo }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Resultados del Análisis Comparativo de Mercado (ACM)</h2>
+        <p>Se realizó un Análisis Comparativo de Mercado (ACM) para {{ "un" if tipo_inmueble.lower() in ["departamento", "local comercial"] else "una" }} {{ tipo_inmueble | lower }} ubicado en el distrito de <strong>{{ zona }} ({{ municipio }})</strong>. La propiedad cuenta con un área total de {{ area_total }} m², {{ dormitorios }} dormitorios, {{ banos }} baños y {{ estacionamiento }} lugares de estacionamiento.</p>
+
+        <p><strong>Precio estimado:</strong> <span class="highlight">{{ precio_estimado }} soles</span></p>
+        <p><strong>Precio estimado en dólares:</strong> <span class="highlight">{{ precio_estimado_dolares }} USD</span></p>
+        <p><strong>Tipo de cambio utilizado:</strong> <span class="highlight">{{ tipo_cambio }} soles por dólar</span></p>
+        <p><strong>Precio por m² estimado:</strong> <span class="highlight">{{ precio_m2 }} soles</span></p>
+        <p><strong>Precio por m² estimado en dólares:</strong> <span class="highlight">{{ precio_m2_dolares }} USD</span></p>
+    </div>
+
+    <div class="section">
+        <h2>Gráficos Comparativos</h2>
+        <div class="charts-container">
+            <div>
+                <div class="chart-title">Comparación de Precios</div>
+                <img src="{{ comparacion_precios_img }}" alt="Comparación de Precios" style="width: 7.39cm; height: 3.58cm;">
+            </div>
+            <div>
+                <div class="chart-title">Comparación de Precios por m²</div>
+                <img src="{{ comparacion_precios_m2_img }}" alt="Comparación de Precios por m²" style="width: 7.39cm; height: 3.58cm;">
+            </div>
+        </div>  
+    </div>
+
+    <div class="section">
+        <h2>Propiedades Similares en el Mercado</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Área Total (m²)</th>
+                    <th>Dormitorios</th>
+                    <th>Baños</th>
+                    <th>Estacionamiento</th>
+                    <th>Precio Venta (S/)</th>
+                    <th>Precio Venta (USD)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for propiedad in propiedades_similares %}
+                <tr>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Área Total']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Dormitorios']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Baños']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Estacionamiento']) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Precio Venta']) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Precio Venta Dolares']) }}</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Precio Estimado de Cierre</h2>
+        <p>El precio estimado de cierre para la propiedad es:</p>
+        <p><strong>Precio Estimado de Cierre:</strong> <span class="highlight">{{ precio_cierre_pred }} soles</span></p>
+        <p><strong>Precio Estimado de Cierre en dólares:</strong> <span class="highlight">{{ precio_cierre_pred_dolares }} dólares</span></p>
+    </div>
+
+    <div class="section">
+        <h2>Propiedades Similares para el Precio de Cierre</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Área Total (m²)</th>
+                    <th>Dormitorios</th>
+                    <th>Baños</th>
+                    <th>Estacionamiento</th>
+                    <th>Precio Cierre (S/)</th>
+                    <th>Precio Cierre (USD)</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for propiedad in propiedades_similares_cierre %}
+                <tr>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Área Total']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Dormitorios']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Baños']) }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(propiedad['Estacionamiento']) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Precio Cierre']) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(propiedad['Precio Cierre Dolares']) }}</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
