@@ -236,31 +236,7 @@ with col2:
 tipo_propiedad = st.selectbox("Selecciona el tipo de propiedad", ["Casa", "Departamento","Local Comercial"])
 tipo_operacion = st.selectbox("Selecciona el tipo de operación", ["Venta", "Alquiler"])
 
-# Datos del propietario
-st.subheader("📌 Datos del Propietario")
-nombre_propietario = st.text_input("Nombre del Propietario")
-correo_propietario = st.text_input("Correo del Propietario")
-telefono_propietario = st.text_input("Teléfono del Propietario")
-
-# Datos del agente
-st.subheader("📌 Datos del Agente")
-nombre_agente = st.text_input("Nombre del Agente")
-correo_agente = st.text_input("Correo del Agente")
-telefono_agente = st.text_input("Teléfono del Agente")
-
-# Almacenar los datos (aunque no se usen por ahora)
-datos_adicionales = {
-    "Propietario": {
-        "Nombre": nombre_propietario,
-        "Correo": correo_propietario,
-        "Teléfono": telefono_propietario
-    },
-    "Agente": {
-        "Nombre": nombre_agente,
-        "Correo": correo_agente,
-        "Teléfono": telefono_agente
-    }
-}
+# Sección de entrada de datos
 
 st.subheader("📌 Datos de Propiedad")
 # Formulario de entrada
@@ -308,7 +284,7 @@ if st.button("Predecir Precio"):
     propiedades_similares['Baños'] = propiedades_similares['Baños'].astype(int)
  
     # Mostrar los resultados
-    tipo_cambio = 3.71  # Tipo de cambio de soles a dólares
+    tipo_cambio = 3.70  # Tipo de cambio de soles a dólares
 
     # Convertir el precio estimado a dólares
     precio_estimado_dolares = precio_estimado / tipo_cambio
