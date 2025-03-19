@@ -490,7 +490,7 @@ if st.button("Predecir Precio"):
     propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre por m²'].round(2)
 
     # Incluir la columna en la tabla
-    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento','Precio Venta' ,'Precio Cierre', 'Precio Cierre por m²', 'Codigo']]
+    propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento' ,'Precio Cierre', 'Precio Cierre por m²', 'Codigo']]
 
     # Asegurar que "Codigo" sea tipo str
     propiedades_similares_mostradas["Codigo"] = propiedades_similares_mostradas["Codigo"].astype(str)
