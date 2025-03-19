@@ -489,7 +489,7 @@ if st.button("Predecir Precio"):
     # Redondear valores
     propiedades_similares_mostradas['Precio Cierre por m²'] = propiedades_similares_mostradas['Precio Cierre por m²'].round(2)
     propiedades_similares_mostradas['Precio Cierre'] = propiedades_similares_mostradas['Precio Cierre'].round(2)
-    propiedades_similares_mostradas = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
+    propiedades_similares_mostradas['Precio Venta'] = np.expm1(propiedades_similares_mostradas['Precio Venta log'])
     # Incluir la columna en la tabla
     propiedades_similares_mostradas = propiedades_similares_mostradas[['Área Total', 'Dormitorios', 'Baños', 'Estacionamiento','Precio Venta' ,'Precio Cierre', 'Precio Cierre por m²', 'Codigo']]
 
