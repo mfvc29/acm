@@ -454,7 +454,7 @@ if st.button("Predecir Precio"):
     })
 
     # Predicción del precio de cierre en logaritmo
-    prediccion_log = modelo_sigi.predict(entrada)
+    prediccion_log =  modelo_sigi.predict(entrada)
     precio_cierre_pred = np.expm1(prediccion_log)[0]
 
     # Calcular precio por metro cuadrado de cierre
@@ -464,11 +464,11 @@ if st.button("Predecir Precio"):
     precio_cierre_m2_dolares = precio_cierre_m2 / tipo_cambio
 
     # Filtrar propiedades de la misma zona
-    propiedades_similares = data[data['Zona_num'] == zona_num].copy()
+    propiedades_similares = data_sigi[data_sigi['Zona_num'] == zona_num].copy()
 
     # Si no hay propiedades en la zona, buscar en todo el dataset
     if propiedades_similares.empty:
-        propiedades_similares = data.copy()
+        propiedades_similares = data_sigi.copy()
         st.warning("⚠️ No se encontraron propiedades similares en esta zona. Mostrando propiedades similares a nivel general.")
 
     # Calcular la distancia euclidiana entre la entrada y el dataset
