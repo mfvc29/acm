@@ -454,7 +454,7 @@ if st.button("Predecir Precio"):
     })
 
     # Predicción del precio de cierre en logaritmo
-    prediccion_log = modelo.predict(entrada)
+    prediccion_log = modelo_sigi.predict(entrada)
     precio_cierre_pred = np.expm1(prediccion_log)[0]
 
     # Calcular precio por metro cuadrado de cierre
